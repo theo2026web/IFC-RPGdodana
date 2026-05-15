@@ -1,11 +1,9 @@
 /* =================================================================
-   IFC SOMBRIO: BATALHA DOS ALUNOS
+   IFC SOMBRIO: BATALHA DOS ALUNOS  —  v2.0
    -----------------------------------------------------------------
-   Arquitetura modular. Os arrays abaixo (PERSONAGENS, ATAQUES,
-   ITENS, LOCAIS) são a fonte única de verdade do jogo.
+   Arquitetura modular. Os arrays abaixo são a fonte única de verdade.
    Para adicionar novos alunos basta acrescentar entradas em
-   PERSONAGENS seguindo EXATAMENTE o padrão de formatação:
-   um atributo por linha, com vírgula no final.
+   PERSONAGENS seguindo EXATAMENTE o padrão: um atributo por linha.
    ================================================================= */
 
 
@@ -40,26 +38,152 @@ const DESVANTAGENS = {
 
 
 /* =========================================================
-   2) ATAQUES (banco de dados)
+   2) CONDIÇÕES DE STATUS
+   ========================================================= */
+const CONDICOES = [
+  {
+    id: "cansado",
+    nome: "Cansado",
+    icone: "Z",
+    cor: "#a89878",
+    descricao: "Ataque reduzido em 30%.",
+    duracao: 3,
+    modAtk: -0.30
+  },
+  {
+    id: "exausto",
+    nome: "Exausto",
+    icone: "X",
+    cor: "#888",
+    descricao: "30% de chance de perder o turno.",
+    duracao: 3,
+    chancePerderTurno: 0.30
+  },
+  {
+    id: "atordoado",
+    nome: "Atordoado",
+    icone: "*",
+    cor: "#ffcc4d",
+    descricao: "Perde o próximo turno.",
+    duracao: 1,
+    chancePerderTurno: 1.0
+  },
+  {
+    id: "sangrando",
+    nome: "Sangrando",
+    icone: "S",
+    cor: "#ff3860",
+    descricao: "Sofre 5 de dano por turno.",
+    duracao: 3,
+    danoPorTurno: 5
+  },
+  {
+    id: "em_chamas",
+    nome: "Em Chamas",
+    icone: "F",
+    cor: "#ff6b00",
+    descricao: "Sofre 7 de dano por turno.",
+    duracao: 2,
+    danoPorTurno: 7
+  },
+  {
+    id: "concentrado",
+    nome: "Concentrado",
+    icone: "+",
+    cor: "#7af0ff",
+    descricao: "+20% de chance crítica.",
+    duracao: 3,
+    modCrit: 20
+  },
+  {
+    id: "inspirado",
+    nome: "Inspirado",
+    icone: "!",
+    cor: "#6effb0",
+    descricao: "+30% de ataque.",
+    duracao: 3,
+    modAtk: 0.30
+  },
+  {
+    id: "protegido",
+    nome: "Protegido",
+    icone: "D",
+    cor: "#90e0ef",
+    descricao: "+50% de defesa.",
+    duracao: 3,
+    modDef: 0.50
+  },
+  {
+    id: "confuso",
+    nome: "Confuso",
+    icone: "?",
+    cor: "#c77dff",
+    descricao: "30% de chance de atacar aliado.",
+    duracao: 2,
+    chanceAtacarAliado: 0.30
+  },
+  {
+    id: "drogado",
+    nome: "Drogado",
+    icone: "@",
+    cor: "#9d4edd",
+    descricao: "Precisão reduzida em 30%.",
+    duracao: 3,
+    modPrecisao: -30
+  },
+  {
+    id: "regenerando",
+    nome: "Regenerando",
+    icone: "+",
+    cor: "#6effb0",
+    descricao: "Recupera 8 HP por turno.",
+    duracao: 3,
+    curaPorTurno: 8
+  }
+];
+
+
+/* =========================================================
+   3) AÇÕES (ataques + habilidades)
+   -----------------------------------------------------------------
+   Campos:
+     id, nome, poder, custoFoco, descricao, estereotipoDono,
+     nivelMinimo, tipoAcao (ataque|buff|debuff|cura|misto),
+     alvo (inimigo_unico|todos_inimigos|aliado_unico|todos_aliados|self),
+     precisao (0-100), chanceCrit (0-100),
+     efeitos [{condicao, chance, turnos, target: "alvo"|"usuario"}]
    ========================================================= */
 const ATAQUES = [
+  /* ---------- BÁSICO ---------- */
   {
     id: "soco_basico",
     nome: "Soco Básico",
     poder: 10,
     custoFoco: 0,
-    descricao: "Um soco direto sem floreios.",
+    descricao: "Soco direto sem floreios.",
     estereotipoDono: "*",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "ataque",
+    alvo: "inimigo_unico",
+    precisao: 95,
+    chanceCrit: 10,
+    efeitos: []
   },
+
+  /* ---------- NERD (dano único + debuff defesa) ---------- */
   {
     id: "calc_brutal",
     nome: "Cálculo Brutal",
     poder: 16,
     custoFoco: 6,
-    descricao: "Resolve a EDO mental do inimigo. Dano psíquico.",
+    descricao: "Resolve a EDO mental do alvo. Reduz defesa.",
     estereotipoDono: "Nerd",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 88,
+    chanceCrit: 12,
+    efeitos: [{condicao: "cansado", chance: 40, turnos: 2, target: "alvo"}]
   },
   {
     id: "teorema_destruidor",
@@ -68,16 +192,42 @@ const ATAQUES = [
     custoFoco: 14,
     descricao: "Prova um lema que invalida a existência do alvo.",
     estereotipoDono: "Nerd",
-    nivelMinimo: 4
+    nivelMinimo: 4,
+    tipoAcao: "ataque",
+    alvo: "inimigo_unico",
+    precisao: 85,
+    chanceCrit: 15,
+    efeitos: []
   },
+  {
+    id: "explicar_tudo",
+    nome: "Explicar Tudo",
+    poder: 0,
+    custoFoco: 8,
+    descricao: "Explica em detalhes. Inimigos ficam cansados.",
+    estereotipoDono: "Nerd",
+    nivelMinimo: 3,
+    tipoAcao: "debuff",
+    alvo: "todos_inimigos",
+    precisao: 90,
+    chanceCrit: 0,
+    efeitos: [{condicao: "cansado", chance: 70, turnos: 3, target: "alvo"}]
+  },
+
+  /* ---------- ATLETA (físico forte + multi) ---------- */
   {
     id: "carrinho_violento",
     nome: "Carrinho Violento",
     poder: 18,
     custoFoco: 4,
-    descricao: "Carrinho por trás. Cartão amarelo emocional.",
+    descricao: "Carrinho por trás. Pode fazer sangrar.",
     estereotipoDono: "Atleta",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 90,
+    chanceCrit: 12,
+    efeitos: [{condicao: "sangrando", chance: 30, turnos: 3, target: "alvo"}]
   },
   {
     id: "supino_de_castigo",
@@ -86,116 +236,325 @@ const ATAQUES = [
     custoFoco: 16,
     descricao: "Levanta o inimigo e deixa cair. 80kg de queda.",
     estereotipoDono: "Atleta",
-    nivelMinimo: 5
+    nivelMinimo: 5,
+    tipoAcao: "ataque",
+    alvo: "inimigo_unico",
+    precisao: 88,
+    chanceCrit: 18,
+    efeitos: []
   },
+  {
+    id: "varrer_a_quadra",
+    nome: "Varrer a Quadra",
+    poder: 14,
+    custoFoco: 12,
+    descricao: "Atinge todos os inimigos com um carrinho duplo.",
+    estereotipoDono: "Atleta",
+    nivelMinimo: 4,
+    tipoAcao: "ataque",
+    alvo: "todos_inimigos",
+    precisao: 85,
+    chanceCrit: 10,
+    efeitos: []
+  },
+
+  /* ---------- VALENTÃO (single target alto + crit) ---------- */
   {
     id: "headbutt_idiota",
     nome: "Headbutt Idiota",
     poder: 17,
     custoFoco: 4,
-    descricao: "Cabeçada sem pensar. Dor real.",
+    descricao: "Cabeçada sem pensar.",
     estereotipoDono: "Valentão",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "ataque",
+    alvo: "inimigo_unico",
+    precisao: 90,
+    chanceCrit: 15,
+    efeitos: []
   },
   {
     id: "intimidacao",
     nome: "Intimidação",
-    poder: 24,
-    custoFoco: 12,
-    descricao: "Encara o inimigo até o foco quebrar.",
+    poder: 0,
+    custoFoco: 8,
+    descricao: "Encara o alvo até paralisar.",
     estereotipoDono: "Valentão",
-    nivelMinimo: 4
+    nivelMinimo: 2,
+    tipoAcao: "debuff",
+    alvo: "inimigo_unico",
+    precisao: 95,
+    chanceCrit: 0,
+    efeitos: [{condicao: "atordoado", chance: 55, turnos: 1, target: "alvo"}]
   },
+  {
+    id: "soco_brutal",
+    nome: "Soco Brutal",
+    poder: 32,
+    custoFoco: 14,
+    descricao: "Soco com força bruta. Alto dano e crítico.",
+    estereotipoDono: "Valentão",
+    nivelMinimo: 4,
+    tipoAcao: "ataque",
+    alvo: "inimigo_unico",
+    precisao: 85,
+    chanceCrit: 25,
+    efeitos: [{condicao: "sangrando", chance: 25, turnos: 2, target: "alvo"}]
+  },
+  {
+    id: "grito_de_guerra",
+    nome: "Grito de Guerra",
+    poder: 0,
+    custoFoco: 10,
+    descricao: "Inspira a si mesmo. +ATK por 3 turnos.",
+    estereotipoDono: "Valentão",
+    nivelMinimo: 3,
+    tipoAcao: "buff",
+    alvo: "self",
+    precisao: 100,
+    chanceCrit: 0,
+    efeitos: [{condicao: "inspirado", chance: 100, turnos: 3, target: "usuario"}]
+  },
+
+  /* ---------- MÚSICO (buff multi aliados / debuff multi) ---------- */
   {
     id: "solo_de_guitarra",
     nome: "Solo de Guitarra",
-    poder: 17,
+    poder: 14,
     custoFoco: 6,
-    descricao: "Um solo tão bom que dá danos reais.",
+    descricao: "Solo poderoso que atinge todos os inimigos.",
     estereotipoDono: "Músico",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "ataque",
+    alvo: "todos_inimigos",
+    precisao: 88,
+    chanceCrit: 10,
+    efeitos: []
+  },
+  {
+    id: "harmonia_inspiradora",
+    nome: "Harmonia Inspiradora",
+    poder: 0,
+    custoFoco: 10,
+    descricao: "Inspira todos os aliados. +ATK por 3 turnos.",
+    estereotipoDono: "Músico",
+    nivelMinimo: 2,
+    tipoAcao: "buff",
+    alvo: "todos_aliados",
+    precisao: 100,
+    chanceCrit: 0,
+    efeitos: [{condicao: "inspirado", chance: 100, turnos: 3, target: "alvo"}]
   },
   {
     id: "acorde_sombrio",
     nome: "Acorde Sombrio",
-    poder: 27,
-    custoFoco: 14,
+    poder: 22,
+    custoFoco: 12,
     descricao: "Toca um Bm7 com peso emocional.",
     estereotipoDono: "Músico",
-    nivelMinimo: 5
+    nivelMinimo: 4,
+    tipoAcao: "misto",
+    alvo: "todos_inimigos",
+    precisao: 82,
+    chanceCrit: 10,
+    efeitos: [{condicao: "cansado", chance: 50, turnos: 2, target: "alvo"}]
   },
+  {
+    id: "cancao_da_paz",
+    nome: "Canção da Paz",
+    poder: 0,
+    custoFoco: 14,
+    descricao: "Cura todos os aliados em 25 HP.",
+    estereotipoDono: "Músico",
+    nivelMinimo: 5,
+    tipoAcao: "cura",
+    alvo: "todos_aliados",
+    precisao: 100,
+    chanceCrit: 0,
+    efeitos: [],
+    cura: 25
+  },
+
+  /* ---------- ENTROZA (debuffs estranhos + drogado) ---------- */
   {
     id: "viagem_existencial",
     nome: "Viagem Existencial",
-    poder: 18,
+    poder: 16,
     custoFoco: 8,
-    descricao: "Lança o inimigo num devaneio metafísico.",
+    descricao: "Lança o alvo num devaneio metafísico.",
     estereotipoDono: "Entroza",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 82,
+    chanceCrit: 10,
+    efeitos: [{condicao: "confuso", chance: 45, turnos: 2, target: "alvo"}]
   },
   {
     id: "cheiro_estranho",
     nome: "Cheiro Estranho",
-    poder: 23,
-    custoFoco: 10,
-    descricao: "Uma onda de odor altera a realidade.",
+    poder: 12,
+    custoFoco: 12,
+    descricao: "Onda de odor atinge todos. Drogado.",
     estereotipoDono: "Entroza",
-    nivelMinimo: 4
+    nivelMinimo: 3,
+    tipoAcao: "debuff",
+    alvo: "todos_inimigos",
+    precisao: 88,
+    chanceCrit: 0,
+    efeitos: [{condicao: "drogado", chance: 60, turnos: 3, target: "alvo"}]
   },
+  {
+    id: "fumacinha",
+    nome: "Fumacinha",
+    poder: 0,
+    custoFoco: 10,
+    descricao: "Conjura uma fumaça que confunde inimigos.",
+    estereotipoDono: "Entroza",
+    nivelMinimo: 4,
+    tipoAcao: "debuff",
+    alvo: "todos_inimigos",
+    precisao: 85,
+    chanceCrit: 0,
+    efeitos: [
+      {condicao: "drogado", chance: 50, turnos: 3, target: "alvo"},
+      {condicao: "confuso", chance: 30, turnos: 2, target: "alvo"}
+    ]
+  },
+
+  /* ---------- PROFESSOR (aoe + cansado) ---------- */
   {
     id: "chamada_oral",
     nome: "Chamada Oral",
-    poder: 19,
+    poder: 17,
     custoFoco: 6,
     descricao: "Pergunta surpresa sobre a matéria.",
     estereotipoDono: "Professor",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 90,
+    chanceCrit: 10,
+    efeitos: [{condicao: "cansado", chance: 40, turnos: 3, target: "alvo"}]
   },
   {
     id: "prova_surpresa",
     nome: "Prova Surpresa",
-    poder: 30,
+    poder: 20,
     custoFoco: 16,
-    descricao: "Distribui uma prova com 0% de chance de passar.",
+    descricao: "Aplica prova em todos os inimigos. Cansaço garantido.",
     estereotipoDono: "Professor",
-    nivelMinimo: 5
+    nivelMinimo: 4,
+    tipoAcao: "misto",
+    alvo: "todos_inimigos",
+    precisao: 85,
+    chanceCrit: 8,
+    efeitos: [{condicao: "cansado", chance: 80, turnos: 3, target: "alvo"}]
   },
+  {
+    id: "advertencia",
+    nome: "Advertência",
+    poder: 0,
+    custoFoco: 8,
+    descricao: "Adverte o aluno. Atordoa.",
+    estereotipoDono: "Professor",
+    nivelMinimo: 2,
+    tipoAcao: "debuff",
+    alvo: "inimigo_unico",
+    precisao: 92,
+    chanceCrit: 0,
+    efeitos: [{condicao: "atordoado", chance: 50, turnos: 1, target: "alvo"}]
+  },
+
+  /* ---------- WOKE (debuff multi + cancelar) ---------- */
   {
     id: "textao",
     nome: "Textão",
-    poder: 16,
-    custoFoco: 5,
-    descricao: "Posta um textão. Dano contínuo de vergonha alheia.",
+    poder: 14,
+    custoFoco: 8,
+    descricao: "Posta um textão que atinge todos os inimigos.",
     estereotipoDono: "Woke",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "ataque",
+    alvo: "todos_inimigos",
+    precisao: 88,
+    chanceCrit: 10,
+    efeitos: []
   },
   {
     id: "cancelar",
     nome: "Cancelar",
-    poder: 28,
+    poder: 24,
     custoFoco: 14,
-    descricao: "Print, mídia, exposed. Reputação anulada.",
+    descricao: "Print, mídia, exposed. Cansa o alvo.",
     estereotipoDono: "Woke",
-    nivelMinimo: 4
+    nivelMinimo: 4,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 85,
+    chanceCrit: 12,
+    efeitos: [{condicao: "cansado", chance: 80, turnos: 3, target: "alvo"}]
   },
+  {
+    id: "consciencia_coletiva",
+    nome: "Consciência Coletiva",
+    poder: 0,
+    custoFoco: 10,
+    descricao: "Inspira e protege todos os aliados.",
+    estereotipoDono: "Woke",
+    nivelMinimo: 3,
+    tipoAcao: "buff",
+    alvo: "todos_aliados",
+    precisao: 100,
+    chanceCrit: 0,
+    efeitos: [{condicao: "protegido", chance: 100, turnos: 3, target: "alvo"}]
+  },
+
+  /* ---------- ESTRANHO (debuff único + confusão) ---------- */
   {
     id: "olhar_perturbador",
     nome: "Olhar Perturbador",
-    poder: 18,
+    poder: 16,
     custoFoco: 4,
-    descricao: "Te observa por tempo demais. Algo está errado.",
+    descricao: "Te observa. Algo está errado.",
     estereotipoDono: "Estranho",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 90,
+    chanceCrit: 10,
+    efeitos: [{condicao: "confuso", chance: 35, turnos: 2, target: "alvo"}]
   },
   {
     id: "sussurro_incompreensivel",
     nome: "Sussurro Incompreensível",
-    poder: 26,
+    poder: 22,
     custoFoco: 12,
     descricao: "Diz algo que ninguém entende mas dói.",
     estereotipoDono: "Estranho",
-    nivelMinimo: 5
+    nivelMinimo: 4,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 85,
+    chanceCrit: 15,
+    efeitos: [{condicao: "drogado", chance: 50, turnos: 3, target: "alvo"}]
   },
+  {
+    id: "presenca_perturbadora",
+    nome: "Presença Perturbadora",
+    poder: 8,
+    custoFoco: 10,
+    descricao: "Sua presença confunde todos.",
+    estereotipoDono: "Estranho",
+    nivelMinimo: 3,
+    tipoAcao: "debuff",
+    alvo: "todos_inimigos",
+    precisao: 88,
+    chanceCrit: 0,
+    efeitos: [{condicao: "confuso", chance: 50, turnos: 2, target: "alvo"}]
+  },
+
+  /* ---------- GAMER (single + multi + rage) ---------- */
   {
     id: "combo_breaker",
     nome: "Combo Breaker",
@@ -203,79 +562,152 @@ const ATAQUES = [
     custoFoco: 5,
     descricao: "Interrompe o turno inimigo com um C C C+P.",
     estereotipoDono: "Gamer",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 90,
+    chanceCrit: 12,
+    efeitos: [{condicao: "atordoado", chance: 25, turnos: 1, target: "alvo"}]
   },
   {
     id: "rage_quit",
     nome: "Rage Quit",
-    poder: 32,
-    custoFoco: 18,
-    descricao: "Arremessa o controle. Dano massivo e auto-dano.",
+    poder: 18,
+    custoFoco: 16,
+    descricao: "Arremessa o controle. Atinge TODOS os inimigos.",
     estereotipoDono: "Gamer",
-    nivelMinimo: 5
+    nivelMinimo: 5,
+    tipoAcao: "ataque",
+    alvo: "todos_inimigos",
+    precisao: 80,
+    chanceCrit: 18,
+    efeitos: [{condicao: "em_chamas", chance: 30, turnos: 2, target: "alvo"}]
   },
+  {
+    id: "estrategia",
+    nome: "Estratégia",
+    poder: 0,
+    custoFoco: 8,
+    descricao: "Concentra-se. +crit por 3 turnos.",
+    estereotipoDono: "Gamer",
+    nivelMinimo: 3,
+    tipoAcao: "buff",
+    alvo: "self",
+    precisao: 100,
+    chanceCrit: 0,
+    efeitos: [{condicao: "concentrado", chance: 100, turnos: 3, target: "usuario"}]
+  },
+
+  /* ---------- GENTE FINA (cura + buff defesa) ---------- */
   {
     id: "elogio_sincero",
     nome: "Elogio Sincero",
-    poder: 16,
+    poder: 12,
     custoFoco: 4,
-    descricao: "Diz algo gentil. O inimigo se desestrutura.",
+    descricao: "Algo gentil. O inimigo se desestrutura.",
     estereotipoDono: "Gente Fina",
-    nivelMinimo: 1
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 95,
+    chanceCrit: 10,
+    efeitos: [{condicao: "cansado", chance: 30, turnos: 2, target: "alvo"}]
   },
   {
     id: "abraco_quentinho",
     nome: "Abraço Quentinho",
-    poder: 25,
-    custoFoco: 12,
-    descricao: "Um abraço sufocantemente afetuoso.",
+    poder: 0,
+    custoFoco: 8,
+    descricao: "Abraço que cura um aliado em 30 HP.",
     estereotipoDono: "Gente Fina",
-    nivelMinimo: 4
+    nivelMinimo: 1,
+    tipoAcao: "cura",
+    alvo: "aliado_unico",
+    precisao: 100,
+    chanceCrit: 0,
+    efeitos: [],
+    cura: 30
+  },
+  {
+    id: "boa_energia",
+    nome: "Boa Energia",
+    poder: 0,
+    custoFoco: 12,
+    descricao: "Aplica regeneração em todos os aliados.",
+    estereotipoDono: "Gente Fina",
+    nivelMinimo: 3,
+    tipoAcao: "buff",
+    alvo: "todos_aliados",
+    precisao: 100,
+    chanceCrit: 0,
+    efeitos: [{condicao: "regenerando", chance: 100, turnos: 3, target: "alvo"}]
+  },
+  {
+    id: "escudo_de_bondade",
+    nome: "Escudo de Bondade",
+    poder: 0,
+    custoFoco: 10,
+    descricao: "Protege um aliado. +DEF por 3 turnos.",
+    estereotipoDono: "Gente Fina",
+    nivelMinimo: 4,
+    tipoAcao: "buff",
+    alvo: "aliado_unico",
+    precisao: 100,
+    chanceCrit: 0,
+    efeitos: [{condicao: "protegido", chance: 100, turnos: 3, target: "alvo"}]
   }
 ];
 
 
 /* =========================================================
-   3) ITENS (consumíveis)
+   4) ITENS (consumíveis)
    ========================================================= */
 const ITENS = [
   {
     id: "merenda",
     nome: "Merenda da Cantina",
     tipo: "cura_hp",
+    alvo: "aliado_unico",
     valor: 35,
-    descricao: "Restaura 35 de HP.",
-    icone: "M"
+    descricao: "Restaura 35 HP de um aliado."
   },
   {
     id: "cafezinho",
     nome: "Cafezinho do Servidor",
     tipo: "cura_foco",
+    alvo: "aliado_unico",
     valor: 25,
-    descricao: "Restaura 25 de Foco.",
-    icone: "C"
+    descricao: "Restaura 25 Foco de um aliado."
   },
   {
     id: "energetico",
     nome: "Energético Pirata",
     tipo: "buff_atk",
+    alvo: "self",
     valor: 5,
-    descricao: "+5 ataque nesta batalha.",
-    icone: "E"
+    descricao: "+5 ATK até o fim da batalha."
   },
   {
     id: "amuleto",
     nome: "Amuleto do Calouro",
     tipo: "cura_total",
+    alvo: "aliado_unico",
     valor: 999,
-    descricao: "Restaura totalmente HP e Foco.",
-    icone: "A"
+    descricao: "Restaura totalmente HP e Foco de um aliado."
+  },
+  {
+    id: "antidoto",
+    nome: "Antídoto Genérico",
+    tipo: "limpar_condicoes",
+    alvo: "aliado_unico",
+    valor: 0,
+    descricao: "Remove todas as condições negativas de um aliado."
   }
 ];
 
 
 /* =========================================================
-   4) LOCAIS (cenários do campus)
+   5) LOCAIS (cenários do campus)
    ========================================================= */
 const LOCAIS = [
   {
@@ -284,7 +716,7 @@ const LOCAIS = [
     bg: "cantina",
     icone: "C",
     descricao: "O cheiro de coxinha vencida paira no ar.",
-    inimigosPossiveis: ["mello", "rosa", "bia"]
+    inimigosPossiveis: ["mello", "rosa", "bia", "luna"]
   },
   {
     id: "quadra",
@@ -300,7 +732,7 @@ const LOCAIS = [
     bg: "lab",
     icone: "L",
     descricao: "Monitores antigos zumbem em uma frequência estranha.",
-    inimigosPossiveis: ["puskas", "kevin", "rafa"]
+    inimigosPossiveis: ["puskas", "kevin", "rafa", "leo"]
   },
   {
     id: "patio",
@@ -308,7 +740,7 @@ const LOCAIS = [
     bg: "patio",
     icone: "P",
     descricao: "Onde tudo começa e tudo termina.",
-    inimigosPossiveis: ["rosa", "bia", "tony", "rafa"]
+    inimigosPossiveis: ["rosa", "bia", "tony", "rafa", "leo"]
   },
   {
     id: "ponto",
@@ -316,13 +748,13 @@ const LOCAIS = [
     bg: "ponto",
     icone: "O",
     descricao: "Cheira a álcool em gel e tédio.",
-    inimigosPossiveis: ["kevin", "rafa", "puskas", "dana"]
+    inimigosPossiveis: ["kevin", "rafa", "puskas", "dana", "luna"]
   }
 ];
 
 
 /* =========================================================
-   5) PERSONAGENS — UM ATRIBUTO POR LINHA (legibilidade total)
+   6) PERSONAGENS — UM ATRIBUTO POR LINHA
    ========================================================= */
 const PERSONAGENS = [
 
@@ -336,7 +768,7 @@ const PERSONAGENS = [
     focoBase: 60,
     ataqueBase: 12,
     defesaBase: 6,
-    ataques: ["calc_brutal", "teorema_destruidor"],
+    ataques: ["calc_brutal", "teorema_destruidor", "explicar_tudo"],
     descricao: "Carrega três HDs externos só com PDFs.",
     isStarter: true
   },
@@ -347,11 +779,11 @@ const PERSONAGENS = [
     estereotipo: "Músico",
     sprite: "assets/dana.png",
     cor: "#c77dff",
-    hpBase: 75,
-    focoBase: 55,
-    ataqueBase: 13,
+    hpBase: 72,
+    focoBase: 65,
+    ataqueBase: 12,
     defesaBase: 6,
-    ataques: ["solo_de_guitarra", "acorde_sombrio"],
+    ataques: ["solo_de_guitarra", "harmonia_inspiradora", "acorde_sombrio", "cancao_da_paz"],
     descricao: "Compõe músicas no banheiro entre aulas.",
     isStarter: true
   },
@@ -364,9 +796,9 @@ const PERSONAGENS = [
     cor: "#ff4d6d",
     hpBase: 95,
     focoBase: 35,
-    ataqueBase: 15,
+    ataqueBase: 16,
     defesaBase: 9,
-    ataques: ["headbutt_idiota", "intimidacao"],
+    ataques: ["headbutt_idiota", "intimidacao", "soco_brutal", "grito_de_guerra"],
     descricao: "Sabe seu nome, sua matrícula e seu medo.",
     isStarter: true
   },
@@ -381,7 +813,7 @@ const PERSONAGENS = [
     focoBase: 40,
     ataqueBase: 14,
     defesaBase: 8,
-    ataques: ["carrinho_violento", "supino_de_castigo"],
+    ataques: ["carrinho_violento", "supino_de_castigo", "varrer_a_quadra"],
     descricao: "Faz 100 abdominais entre uma aula e outra.",
     isStarter: false
   },
@@ -394,9 +826,9 @@ const PERSONAGENS = [
     cor: "#ffcc4d",
     hpBase: 70,
     focoBase: 65,
-    ataqueBase: 12,
+    ataqueBase: 11,
     defesaBase: 6,
-    ataques: ["viagem_existencial", "cheiro_estranho"],
+    ataques: ["viagem_existencial", "cheiro_estranho", "fumacinha"],
     descricao: "Acredita que o IFC é uma simulação.",
     isStarter: false
   },
@@ -409,9 +841,9 @@ const PERSONAGENS = [
     cor: "#ff8c42",
     hpBase: 85,
     focoBase: 60,
-    ataqueBase: 14,
+    ataqueBase: 13,
     defesaBase: 9,
-    ataques: ["chamada_oral", "prova_surpresa"],
+    ataques: ["chamada_oral", "advertencia", "prova_surpresa"],
     descricao: "Não aceita atraso e não responde no privado.",
     isStarter: false
   },
@@ -424,9 +856,9 @@ const PERSONAGENS = [
     cor: "#9d4edd",
     hpBase: 72,
     focoBase: 60,
-    ataqueBase: 13,
+    ataqueBase: 12,
     defesaBase: 7,
-    ataques: ["textao", "cancelar"],
+    ataques: ["textao", "cancelar", "consciencia_coletiva"],
     descricao: "Tem 8 redes sociais e usa todas pra denunciar.",
     isStarter: false
   },
@@ -439,9 +871,9 @@ const PERSONAGENS = [
     cor: "#5a189a",
     hpBase: 78,
     focoBase: 55,
-    ataqueBase: 13,
+    ataqueBase: 12,
     defesaBase: 7,
-    ataques: ["olhar_perturbador", "sussurro_incompreensivel"],
+    ataques: ["olhar_perturbador", "sussurro_incompreensivel", "presenca_perturbadora"],
     descricao: "Aparece em fotos sem ter sido convidado.",
     isStarter: false
   },
@@ -456,7 +888,7 @@ const PERSONAGENS = [
     focoBase: 60,
     ataqueBase: 13,
     defesaBase: 6,
-    ataques: ["combo_breaker", "rage_quit"],
+    ataques: ["combo_breaker", "estrategia", "rage_quit"],
     descricao: "Joga ranqueada em vez de fazer trabalho.",
     isStarter: false
   },
@@ -468,70 +900,44 @@ const PERSONAGENS = [
     sprite: "assets/luna.png",
     cor: "#90e0ef",
     hpBase: 82,
-    focoBase: 55,
-    ataqueBase: 12,
+    focoBase: 60,
+    ataqueBase: 11,
     defesaBase: 8,
-    ataques: ["elogio_sincero", "abraco_quentinho"],
+    ataques: ["elogio_sincero", "abraco_quentinho", "boa_energia", "escudo_de_bondade"],
     descricao: "Sempre tem um chiclete pra te oferecer.",
     isStarter: false
   }
 
 ];
 
-// Atualizar lista de inimigos no mapa para usar IDs reais
-LOCAIS.forEach(loc => {
-  loc.inimigosPossiveis = loc.inimigosPossiveis.filter(id =>
-    PERSONAGENS.some(p => p.id === id)
-  );
-});
-// Adicionar leo e luna em locais sem ficar todos com mesmos
-LOCAIS[0].inimigosPossiveis.push("luna");
-LOCAIS[2].inimigosPossiveis.push("leo");
-LOCAIS[3].inimigosPossiveis.push("leo");
-LOCAIS[4].inimigosPossiveis.push("luna");
-
 
 /* =========================================================
-   6) ESTADO DO JOGO
+   7) ESTADO DO JOGO
    ========================================================= */
-const SAVE_KEY = "ifc_sombrio_save_v1";
+const SAVE_KEY = "ifc_sombrio_save_v2";
 
 const state = {
-  party: [],          // array de instâncias de personagem (player-owned)
-  ativo: 0,           // índice do personagem ativo na party
-  inventario: {},     // id_item -> quantidade
-  derrotados: [],     // ids de inimigos derrotados (não pode reaparecer logo)
-  batalha: null,      // estado da batalha atual
-  iniciado: false
+  party: [],
+  ativo: 0,
+  inventario: {},
+  derrotados: [],
+  batalha: null,
+  iniciado: false,
+  somAtivo: true
 };
 
 
 /* =========================================================
-   7) HELPERS
+   8) HELPERS
    ========================================================= */
-function getPersonagem(id) {
-  return PERSONAGENS.find(p => p.id === id);
-}
+function getPersonagem(id) { return PERSONAGENS.find(p => p.id === id); }
+function getAtaque(id)     { return ATAQUES.find(a => a.id === id); }
+function getItem(id)       { return ITENS.find(i => i.id === id); }
+function getLocal(id)      { return LOCAIS.find(l => l.id === id); }
+function getCondicao(id)   { return CONDICOES.find(c => c.id === id); }
 
-function getAtaque(id) {
-  return ATAQUES.find(a => a.id === id);
-}
-
-function getItem(id) {
-  return ITENS.find(i => i.id === id);
-}
-
-function getLocal(id) {
-  return LOCAIS.find(l => l.id === id);
-}
-
-function rand(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-function clamp(v, min, max) {
-  return Math.max(min, Math.min(max, v));
-}
+function rand(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
 function instanciarPersonagem(base, nivel = 1) {
   const ataquesIniciais = ATAQUES
@@ -540,6 +946,7 @@ function instanciarPersonagem(base, nivel = 1) {
     .map(a => a.id);
 
   return {
+    uid: base.id + "_" + Math.random().toString(36).slice(2, 7),
     id: base.id,
     nome: base.nome,
     estereotipo: base.estereotipo,
@@ -554,28 +961,88 @@ function instanciarPersonagem(base, nivel = 1) {
     ataque:  base.ataqueBase + (nivel - 1) * 2,
     defesa:  base.defesaBase + (nivel - 1) * 1,
     ataques: ataquesIniciais.length > 0 ? ataquesIniciais : ["soco_basico"],
-    buffAtk: 0
+    buffAtk: 0,
+    condicoes: []
   };
 }
 
-function xpParaProximoNivel(nivel) {
-  return 30 + nivel * 20;
-}
+function xpParaProximoNivel(nivel) { return 30 + nivel * 20; }
 
 
 /* =========================================================
-   8) PIXEL SPRITE GENERATOR (canvas) — fallback caso imagem falte
+   9) SOUND SYSTEM (Web Audio API + arquivos)
+   ========================================================= */
+const SFX = {
+  ctx: null,
+  cache: {},
+
+  init() {
+    if (!this.ctx) {
+      try { this.ctx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch(e) { this.ctx = null; }
+    }
+  },
+
+  beep(freq, duration, type = "square", vol = 0.08) {
+    if (!state.somAtivo) return;
+    this.init();
+    if (!this.ctx) return;
+    const t = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(vol, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+    osc.connect(gain).connect(this.ctx.destination);
+    osc.start(t);
+    osc.stop(t + duration);
+  },
+
+  // Tenta arquivo, senão usa beep generativo
+  playOrBeep(name, fallback) {
+    if (!state.somAtivo) return;
+    if (this.cache[name] === false) { fallback(); return; }
+    if (this.cache[name]) {
+      try { this.cache[name].currentTime = 0; this.cache[name].play(); }
+      catch(e) { fallback(); }
+      return;
+    }
+    const audio = new Audio(`assets/sfx/${name}.mp3`);
+    audio.volume = 0.4;
+    audio.addEventListener("canplaythrough", () => {
+      this.cache[name] = audio;
+      try { audio.play(); } catch(e) {}
+    }, { once: true });
+    audio.addEventListener("error", () => {
+      this.cache[name] = false;
+      fallback();
+    }, { once: true });
+  },
+
+  hit()      { this.playOrBeep("hit",      () => this.beep(220, 0.10, "square", 0.10)); },
+  crit()     { this.playOrBeep("crit",     () => { this.beep(660, 0.08, "square"); setTimeout(()=>this.beep(880, 0.12, "square"), 80); }); },
+  miss()     { this.playOrBeep("miss",     () => this.beep(160, 0.12, "sawtooth", 0.06)); },
+  heal()     { this.playOrBeep("heal",     () => { this.beep(523, 0.10, "sine"); setTimeout(()=>this.beep(784, 0.14, "sine"), 80); }); },
+  buff()     { this.playOrBeep("buff",     () => { this.beep(440, 0.08, "triangle"); setTimeout(()=>this.beep(660, 0.10, "triangle"), 70); }); },
+  debuff()   { this.playOrBeep("debuff",   () => { this.beep(330, 0.10, "sawtooth"); setTimeout(()=>this.beep(220, 0.12, "sawtooth"), 80); }); },
+  menu()     { this.playOrBeep("menu",     () => this.beep(880, 0.04, "square", 0.05)); },
+  victory()  { this.playOrBeep("victory",  () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.beep(f,0.15,"triangle"), i*120)); }); },
+  defeat()   { this.playOrBeep("defeat",   () => { [392,330,262,196].forEach((f,i)=>setTimeout(()=>this.beep(f,0.20,"sawtooth"), i*150)); }); },
+  levelUp()  { this.playOrBeep("levelup",  () => { [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>this.beep(f,0.10,"square"), i*80)); }); }
+};
+
+
+/* =========================================================
+   10) PIXEL SPRITE GENERATOR (canvas) — fallback
    ========================================================= */
 function gerarSpritePixel(personagem, tamanho = 96) {
   const canvas = document.createElement("canvas");
-  canvas.width  = 16;
-  canvas.height = 16;
+  canvas.width = 16; canvas.height = 16;
   canvas.className = "pixel-sprite";
-  canvas.style.width  = tamanho + "px";
+  canvas.style.width = tamanho + "px";
   canvas.style.height = tamanho + "px";
   const ctx = canvas.getContext("2d");
-
-  // Fundo transparente
   ctx.clearRect(0, 0, 16, 16);
 
   const cor = personagem.cor || "#f4e9d8";
@@ -584,106 +1051,52 @@ function gerarSpritePixel(personagem, tamanho = 96) {
   const corPeleEscura = "#c79468";
   const preto = "#1a0f0a";
 
-  // Cabeça
-  ctx.fillStyle = corPele;
-  ctx.fillRect(5, 2, 6, 5);
-  ctx.fillStyle = corPeleEscura;
-  ctx.fillRect(5, 6, 6, 1);
-
-  // Cabelo (varia por estereótipo)
+  ctx.fillStyle = corPele;     ctx.fillRect(5, 2, 6, 5);
+  ctx.fillStyle = corPeleEscura; ctx.fillRect(5, 6, 6, 1);
   ctx.fillStyle = cor;
+
   switch (personagem.estereotipo) {
     case "Nerd":
-      ctx.fillRect(5, 1, 6, 2);
-      ctx.fillRect(4, 2, 1, 2);
-      // óculos
-      ctx.fillStyle = preto;
-      ctx.fillRect(5, 4, 2, 1);
-      ctx.fillRect(9, 4, 2, 1);
-      break;
+      ctx.fillRect(5, 1, 6, 2); ctx.fillRect(4, 2, 1, 2);
+      ctx.fillStyle = preto; ctx.fillRect(5, 4, 2, 1); ctx.fillRect(9, 4, 2, 1); break;
     case "Atleta":
-      ctx.fillRect(5, 1, 6, 1);
-      ctx.fillRect(4, 2, 1, 1);
-      ctx.fillRect(11, 2, 1, 1);
-      break;
+      ctx.fillRect(5, 1, 6, 1); ctx.fillRect(4, 2, 1, 1); ctx.fillRect(11, 2, 1, 1); break;
     case "Valentão":
       ctx.fillRect(4, 1, 8, 2);
-      ctx.fillStyle = preto;
-      ctx.fillRect(6, 4, 1, 1);
-      ctx.fillRect(9, 4, 1, 1);
-      break;
+      ctx.fillStyle = preto; ctx.fillRect(6, 4, 1, 1); ctx.fillRect(9, 4, 1, 1); break;
     case "Músico":
-      ctx.fillRect(4, 1, 8, 3);
-      ctx.fillRect(3, 2, 1, 3);
-      ctx.fillRect(12, 2, 1, 3);
-      break;
+      ctx.fillRect(4, 1, 8, 3); ctx.fillRect(3, 2, 1, 3); ctx.fillRect(12, 2, 1, 3); break;
     case "Entroza":
-      ctx.fillRect(4, 0, 8, 3);
-      ctx.fillRect(3, 1, 1, 4);
-      ctx.fillRect(12, 1, 1, 4);
-      ctx.fillRect(4, 7, 8, 1);
-      break;
+      ctx.fillRect(4, 0, 8, 3); ctx.fillRect(3, 1, 1, 4); ctx.fillRect(12, 1, 1, 4); ctx.fillRect(4, 7, 8, 1); break;
     case "Professor":
-      ctx.fillStyle = "#888";
-      ctx.fillRect(5, 1, 6, 2);
-      ctx.fillStyle = preto;
-      ctx.fillRect(5, 4, 2, 1);
-      ctx.fillRect(9, 4, 2, 1);
-      ctx.fillStyle = "#888";
-      ctx.fillRect(7, 5, 2, 1);
-      break;
+      ctx.fillStyle = "#888"; ctx.fillRect(5, 1, 6, 2);
+      ctx.fillStyle = preto; ctx.fillRect(5, 4, 2, 1); ctx.fillRect(9, 4, 2, 1);
+      ctx.fillStyle = "#888"; ctx.fillRect(7, 5, 2, 1); break;
     case "Woke":
       ctx.fillRect(4, 1, 8, 2);
-      ctx.fillStyle = "#ff4d6d";
-      ctx.fillRect(4, 2, 2, 1);
-      ctx.fillStyle = "#7af0ff";
-      ctx.fillRect(10, 2, 2, 1);
-      break;
+      ctx.fillStyle = "#ff4d6d"; ctx.fillRect(4, 2, 2, 1);
+      ctx.fillStyle = "#7af0ff"; ctx.fillRect(10, 2, 2, 1); break;
     case "Estranho":
       ctx.fillRect(4, 1, 8, 2);
-      ctx.fillStyle = "#ff0";
-      ctx.fillRect(6, 4, 1, 1);
-      ctx.fillRect(9, 4, 1, 1);
-      break;
+      ctx.fillStyle = "#ff0"; ctx.fillRect(6, 4, 1, 1); ctx.fillRect(9, 4, 1, 1); break;
     case "Gamer":
       ctx.fillRect(5, 1, 6, 2);
-      // headset
-      ctx.fillStyle = preto;
-      ctx.fillRect(4, 2, 1, 3);
-      ctx.fillRect(11, 2, 1, 3);
-      break;
+      ctx.fillStyle = preto; ctx.fillRect(4, 2, 1, 3); ctx.fillRect(11, 2, 1, 3); break;
     case "Gente Fina":
       ctx.fillRect(5, 1, 6, 2);
-      // sorriso
-      ctx.fillStyle = "#ff4d6d";
-      ctx.fillRect(6, 6, 4, 1);
-      break;
+      ctx.fillStyle = "#ff4d6d"; ctx.fillRect(6, 6, 4, 1); break;
     default:
       ctx.fillRect(5, 1, 6, 2);
   }
 
-  // Olhos padrão se não desenhados
   if (!["Valentão","Estranho","Nerd","Professor"].includes(personagem.estereotipo)) {
-    ctx.fillStyle = preto;
-    ctx.fillRect(6, 4, 1, 1);
-    ctx.fillRect(9, 4, 1, 1);
+    ctx.fillStyle = preto; ctx.fillRect(6, 4, 1, 1); ctx.fillRect(9, 4, 1, 1);
   }
 
-  // Corpo
-  ctx.fillStyle = corEscura;
-  ctx.fillRect(4, 8, 8, 5);
-  ctx.fillStyle = cor;
-  ctx.fillRect(5, 9, 6, 3);
-
-  // Pernas
-  ctx.fillStyle = preto;
-  ctx.fillRect(5, 13, 2, 3);
-  ctx.fillRect(9, 13, 2, 3);
-
-  // Braços
-  ctx.fillStyle = corPele;
-  ctx.fillRect(3, 9, 1, 3);
-  ctx.fillRect(12, 9, 1, 3);
+  ctx.fillStyle = corEscura; ctx.fillRect(4, 8, 8, 5);
+  ctx.fillStyle = cor;       ctx.fillRect(5, 9, 6, 3);
+  ctx.fillStyle = preto;     ctx.fillRect(5, 13, 2, 3); ctx.fillRect(9, 13, 2, 3);
+  ctx.fillStyle = corPele;   ctx.fillRect(3, 9, 1, 3);  ctx.fillRect(12, 9, 1, 3);
 
   return canvas;
 }
@@ -700,7 +1113,6 @@ function sombrear(hex, amt) {
 
 function montarSprite(targetEl, personagem) {
   targetEl.innerHTML = "";
-  // tenta carregar imagem real; se falhar, gera sprite pixel
   if (personagem.sprite) {
     const img = new Image();
     img.onload  = () => { targetEl.innerHTML = ""; targetEl.appendChild(img); };
@@ -710,7 +1122,6 @@ function montarSprite(targetEl, personagem) {
     };
     img.src = personagem.sprite;
     img.alt = personagem.nome;
-    // se a imagem nunca carregar, fallback após pequeno delay
     setTimeout(() => {
       if (!targetEl.querySelector("img") && !targetEl.querySelector("canvas")) {
         targetEl.appendChild(gerarSpritePixel(personagem, targetEl.clientWidth));
@@ -723,7 +1134,7 @@ function montarSprite(targetEl, personagem) {
 
 
 /* =========================================================
-   9) SAVE / LOAD (localStorage)
+   11) SAVE / LOAD
    ========================================================= */
 function salvarJogo() {
   const data = {
@@ -732,15 +1143,11 @@ function salvarJogo() {
     inventario: state.inventario,
     derrotados: state.derrotados,
     iniciado: state.iniciado,
+    somAtivo: state.somAtivo,
     ts: Date.now()
   };
-  try {
-    localStorage.setItem(SAVE_KEY, JSON.stringify(data));
-    return true;
-  } catch (e) {
-    console.error("Falha ao salvar:", e);
-    return false;
-  }
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); return true; }
+  catch (e) { return false; }
 }
 
 function carregarJogo() {
@@ -753,23 +1160,17 @@ function carregarJogo() {
     state.inventario  = data.inventario  || {};
     state.derrotados  = data.derrotados  || [];
     state.iniciado    = data.iniciado    || false;
+    state.somAtivo    = data.somAtivo !== undefined ? data.somAtivo : true;
     return state.party.length > 0;
-  } catch (e) {
-    return false;
-  }
+  } catch (e) { return false; }
 }
 
-function temSave() {
-  return !!localStorage.getItem(SAVE_KEY);
-}
-
-function apagarSave() {
-  localStorage.removeItem(SAVE_KEY);
-}
+function temSave() { return !!localStorage.getItem(SAVE_KEY); }
+function apagarSave() { localStorage.removeItem(SAVE_KEY); }
 
 
 /* =========================================================
-   10) NAVEGAÇÃO DE TELAS
+   12) NAVEGAÇÃO DE TELAS
    ========================================================= */
 function mostrarTela(id) {
   document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
@@ -786,53 +1187,42 @@ function abrirModal(titulo, corpo, botoes) {
     btn.className = "pixel-btn small" + (b.danger ? " danger" : "");
     btn.textContent = b.label;
     btn.setAttribute("data-testid", b.testid || "modal-btn");
-    btn.onclick = () => {
-      fecharModal();
-      if (b.onClick) b.onClick();
-    };
+    btn.onclick = () => { fecharModal(); if (b.onClick) b.onClick(); };
     actions.appendChild(btn);
   });
   document.getElementById("modal").classList.remove("hidden");
 }
 
-function fecharModal() {
-  document.getElementById("modal").classList.add("hidden");
-}
+function fecharModal() { document.getElementById("modal").classList.add("hidden"); }
 
 
 /* =========================================================
-   11) TELA TÍTULO
+   13) TÍTULO
    ========================================================= */
 function initTitulo() {
   document.getElementById("btn-continue").disabled = !temSave();
   document.getElementById("btn-continue").style.opacity = temSave() ? "1" : "0.4";
 
   document.getElementById("btn-new-game").onclick = () => {
+    SFX.menu();
     if (temSave()) {
-      abrirModal("Apagar progresso?",
-        "Já existe um save. Iniciar novo jogo irá apagá-lo.",
-        [
-          { label: "CANCELAR", testid: "modal-cancel" },
-          { label: "APAGAR E COMEÇAR", danger: true, testid: "modal-confirm",
-            onClick: () => { apagarSave(); irParaSelecaoStarter(); } }
-        ]
-      );
-    } else {
-      irParaSelecaoStarter();
-    }
+      abrirModal("Apagar progresso?", "Já existe um save. Iniciar novo jogo irá apagá-lo.", [
+        { label: "CANCELAR", testid: "modal-cancel" },
+        { label: "APAGAR", danger: true, testid: "modal-confirm",
+          onClick: () => { apagarSave(); irParaSelecaoStarter(); } }
+      ]);
+    } else { irParaSelecaoStarter(); }
   };
 
   document.getElementById("btn-continue").onclick = () => {
-    if (carregarJogo()) {
-      renderMapa();
-      mostrarTela("screen-map");
-    }
+    SFX.menu();
+    if (carregarJogo()) { renderMapa(); mostrarTela("screen-map"); }
   };
 }
 
 
 /* =========================================================
-   12) SELEÇÃO DO STARTER
+   14) STARTER
    ========================================================= */
 function irParaSelecaoStarter() {
   const grid = document.getElementById("starter-grid");
@@ -852,7 +1242,7 @@ function irParaSelecaoStarter() {
       </div>
     `;
     montarSprite(card.querySelector(".sprite-box"), p);
-    card.onclick = () => escolherStarter(p);
+    card.onclick = () => { SFX.menu(); escolherStarter(p); };
     grid.appendChild(card);
   });
   mostrarTela("screen-pick-starter");
@@ -861,7 +1251,7 @@ function irParaSelecaoStarter() {
 function escolherStarter(personagemBase) {
   state.party = [instanciarPersonagem(personagemBase, 1)];
   state.ativo = 0;
-  state.inventario = { merenda: 2, cafezinho: 1 };
+  state.inventario = { merenda: 2, cafezinho: 1, antidoto: 1 };
   state.derrotados = [];
   state.iniciado = true;
   salvarJogo();
@@ -871,7 +1261,7 @@ function escolherStarter(personagemBase) {
 
 
 /* =========================================================
-   13) MAPA DO CAMPUS
+   15) MAPA
    ========================================================= */
 function renderMapa() {
   const grid = document.getElementById("map-grid");
@@ -886,16 +1276,16 @@ function renderMapa() {
       <p>${loc.descricao}</p>
       <div class="loc-foes">??? alunos suspeitos vistos por aqui</div>
     `;
-    card.onclick = () => irParaLocacao(loc);
+    card.onclick = () => { SFX.menu(); irParaLocacao(loc); };
     grid.appendChild(card);
   });
   renderPlayerStatus();
 }
 
 function renderPlayerStatus() {
+  const el = document.getElementById("player-status");
   const ativo = state.party[state.ativo];
   if (!ativo) return;
-  const el = document.getElementById("player-status");
   el.innerHTML = `
     <div class="ps-line"><strong>${ativo.nome}</strong><span>${ativo.estereotipo}</span></div>
     <div class="ps-line"><span>Nv ${ativo.nivel}</span><span>XP ${ativo.xp}/${xpParaProximoNivel(ativo.nivel)}</span></div>
@@ -906,7 +1296,7 @@ function renderPlayerStatus() {
 
 
 /* =========================================================
-   14) LOCAÇÃO (escolha do inimigo — sprites OCULTOS)
+   16) LOCAÇÃO (silhuetas)
    ========================================================= */
 let locacaoAtual = null;
 
@@ -914,94 +1304,131 @@ function irParaLocacao(loc) {
   locacaoAtual = loc;
   document.getElementById("location-title").textContent = loc.nome;
   document.getElementById("location-desc").textContent  = loc.descricao + " Veja silhuetas suspeitas por aqui:";
-
   const grid = document.getElementById("silhouette-grid");
   grid.innerHTML = "";
 
-  // Sortear 3 silhuetas (alguns inimigos possíveis)
-  const candidatos = loc.inimigosPossiveis
-    .map(id => getPersonagem(id))
-    .filter(p => p);
+  // Sortear de 1 a 3 grupos (cada grupo = batalha)
+  const candidatos = loc.inimigosPossiveis.map(id => getPersonagem(id)).filter(p => p);
+  const numGrupos = Math.min(3, candidatos.length);
 
-  // Embaralhar e pegar até 3
-  const escolhidos = [...candidatos].sort(() => Math.random() - 0.5).slice(0, 3);
+  for (let g = 0; g < numGrupos; g++) {
+    // Cada grupo tem 1 a 3 inimigos
+    const tamanhoGrupo = rand(1, Math.min(3, state.party.length + 1));
+    const embaralhados = [...candidatos].sort(() => Math.random() - 0.5);
+    const grupo = embaralhados.slice(0, tamanhoGrupo);
 
-  escolhidos.forEach((p, idx) => {
     const card = document.createElement("div");
     card.className = "silhouette-card";
-    card.setAttribute("data-testid", `silhouette-${idx}`);
-    card.innerHTML = `
-      <div class="silhouette-box"></div>
-      <div class="sil-label">??? — alvo nº ${idx + 1}</div>
-    `;
-    card.onclick = () => iniciarBatalha(p, loc);
-    grid.appendChild(card);
-  });
+    card.setAttribute("data-testid", `silhouette-${g}`);
 
-  document.getElementById("btn-back-map").onclick = () => mostrarTela("screen-map");
+    const silsHtml = grupo.map(() =>
+      `<div class="silhouette-box small-sil"></div>`
+    ).join("");
+
+    card.innerHTML = `
+      <div class="silhouette-row">${silsHtml}</div>
+      <div class="sil-label">${tamanhoGrupo === 1 ? "1 oponente" : `${tamanhoGrupo} oponentes`}</div>
+    `;
+    card.onclick = () => { SFX.menu(); iniciarBatalha(grupo, loc); };
+    grid.appendChild(card);
+  }
+
+  document.getElementById("btn-back-map").onclick = () => { SFX.menu(); mostrarTela("screen-map"); };
   mostrarTela("screen-location");
 }
 
 
 /* =========================================================
-   15) BATALHA
+   17) BATALHA
    ========================================================= */
-function iniciarBatalha(inimigoBase, loc) {
-  // Nível inimigo proporcional ao nível do player ativo
-  const nivelInimigo = Math.max(1, state.party[state.ativo].nivel + rand(-1, 1));
-  const inimigo = instanciarPersonagem(inimigoBase, nivelInimigo);
+function iniciarBatalha(inimigosBases, loc) {
+  const nivelMedio = state.party[state.ativo].nivel;
+  const inimigos = inimigosBases.map(b => {
+    const nv = Math.max(1, nivelMedio + rand(-1, 1));
+    return instanciarPersonagem(b, nv);
+  });
+
+  // Party em campo: até 3 primeiros vivos
+  const partyEmCampo = state.party.filter(p => p.hp > 0).slice(0, 3);
 
   state.batalha = {
-    inimigo: inimigo,
-    inimigoBaseId: inimigoBase.id,
+    inimigos: inimigos,
+    inimigosBaseIds: inimigosBases.map(b => b.id),
+    partyEmCampo: partyEmCampo,
     local: loc,
-    turno: "player",
+    turnoAtor: 0,
+    fase: "player",
     log: [],
-    acabou: false
+    acabou: false,
+    acaoAtual: null
   };
 
-  // Cenário
-  const cena = document.getElementById("battle-scene");
-  cena.setAttribute("data-bg", loc.bg);
-
+  document.getElementById("battle-scene").setAttribute("data-bg", loc.bg);
   renderBatalha();
-  log(`Você encontrou ${inimigo.nome} (${inimigo.estereotipo}) em ${loc.nome}!`, "system");
-  log(`É hora da batalha!`, "system");
+  log(`Você encontrou ${inimigos.map(i => i.nome).join(", ")} em ${loc.nome}!`, "system");
+  log(`Hora da batalha!`, "system");
   mostrarTela("screen-battle");
+  proximoTurno();
 }
 
 function renderBatalha() {
   const b = state.batalha;
   if (!b) return;
-  const player = state.party[state.ativo];
-  const inimigo = b.inimigo;
 
-  // sprites
-  montarSprite(document.getElementById("player-sprite"), player);
-  montarSprite(document.getElementById("enemy-sprite"),  inimigo);
+  // ENEMIES
+  const enemyContainer = document.getElementById("enemies-container");
+  enemyContainer.innerHTML = "";
+  b.inimigos.forEach((inim, idx) => {
+    enemyContainer.appendChild(criarCardCombatente(inim, idx, "enemy"));
+  });
 
-  // nomes e estereotipos
-  document.getElementById("player-name").textContent = `${player.nome} Nv${player.nivel}`;
-  document.getElementById("player-stereo").textContent = player.estereotipo;
-  document.getElementById("enemy-name").textContent = `${inimigo.nome} Nv${inimigo.nivel}`;
-  document.getElementById("enemy-stereo").textContent = inimigo.estereotipo;
+  // PARTY
+  const partyContainer = document.getElementById("party-container");
+  partyContainer.innerHTML = "";
+  b.partyEmCampo.forEach((p, idx) => {
+    partyContainer.appendChild(criarCardCombatente(p, idx, "player"));
+  });
 
-  // barras
-  setBar("player-hp", player.hp, player.hpMax);
-  setBar("player-mp", player.foco, player.focoMax);
-  setBar("enemy-hp",  inimigo.hp, inimigo.hpMax);
+  // Marca quem é o ator atual
+  if (b.fase === "player" && b.partyEmCampo[b.turnoAtor]) {
+    const card = partyContainer.children[b.turnoAtor];
+    if (card) card.classList.add("active-turn");
+  }
 
-  // menu principal visível, submenu oculto
   document.getElementById("battle-menu").classList.remove("hidden");
   document.getElementById("battle-submenu").classList.add("hidden");
+  document.getElementById("battle-target").classList.add("hidden");
 }
 
-function setBar(prefix, val, max) {
-  const fill  = document.getElementById(prefix + "-fill");
-  const label = document.getElementById(prefix + "-label");
-  const pct = clamp((val / max) * 100, 0, 100);
-  fill.style.width = pct + "%";
-  label.textContent = `${val}/${max}`;
+function criarCardCombatente(c, idx, lado) {
+  const wrap = document.createElement("div");
+  wrap.className = "combatant " + (lado === "enemy" ? "is-enemy" : "is-player");
+  wrap.setAttribute("data-uid", c.uid);
+  wrap.setAttribute("data-testid", `combatant-${lado}-${idx}`);
+  if (c.hp <= 0) wrap.classList.add("ko");
+
+  const condBadges = c.condicoes.map(cd => {
+    const def = getCondicao(cd.id);
+    return `<span class="cond-badge" style="background:${def.cor}" title="${def.nome} (${cd.turnos})">${def.icone}</span>`;
+  }).join("");
+
+  const hasFoco = lado === "player";
+  const barsHtml = `
+    <div class="bar hp"><div class="bar-fill" style="width:${(c.hp/c.hpMax)*100}%"></div><span class="bar-label">${c.hp}/${c.hpMax}</span></div>
+    ${hasFoco ? `<div class="bar mp"><div class="bar-fill" style="width:${(c.foco/c.focoMax)*100}%"></div><span class="bar-label">${c.foco}/${c.focoMax}</span></div>` : ""}
+  `;
+
+  wrap.innerHTML = `
+    <div class="sprite-box battle-sprite"></div>
+    <div class="combatant-info">
+      <div class="char-name">${c.nome} Nv${c.nivel}</div>
+      <div class="char-stereo">${c.estereotipo}</div>
+      ${barsHtml}
+      <div class="cond-row">${condBadges}</div>
+    </div>
+  `;
+  montarSprite(wrap.querySelector(".sprite-box"), c);
+  return wrap;
 }
 
 function log(texto, tipo = "") {
@@ -1014,40 +1441,106 @@ function log(texto, tipo = "") {
 }
 
 
-/* ----- Cálculo de dano ----- */
-function calcularDano(atacante, alvo, ataque) {
-  let multi = 1.0;
-  let tipoEf = "normal";
+/* ---------- TURNO SYSTEM ---------- */
+function proximoTurno() {
+  const b = state.batalha;
+  if (!b || b.acabou) return;
 
-  if (VANTAGENS[atacante.estereotipo] === alvo.estereotipo) {
-    multi = 1.5;
-    tipoEf = "forte";
-  } else if (DESVANTAGENS[atacante.estereotipo] === alvo.estereotipo) {
-    multi = 0.5;
-    tipoEf = "fraco";
+  // Check fim de batalha
+  if (b.inimigos.every(i => i.hp <= 0)) { finalizarVitoria(); return; }
+  if (b.partyEmCampo.every(p => p.hp <= 0)) { finalizarDerrota(); return; }
+
+  if (b.fase === "player") {
+    // Encontrar próximo aliado vivo
+    while (b.turnoAtor < b.partyEmCampo.length && b.partyEmCampo[b.turnoAtor].hp <= 0) {
+      b.turnoAtor++;
+    }
+    if (b.turnoAtor >= b.partyEmCampo.length) {
+      // Fim da fase player → processa condições e vai pra fase enemy
+      processarCondicoesTurno(b.partyEmCampo);
+      b.fase = "enemy";
+      b.turnoAtor = 0;
+      renderBatalha();
+      setTimeout(proximoTurno, 600);
+      return;
+    }
+    // Verifica se está atordoado/exausto antes de permitir agir
+    const ator = b.partyEmCampo[b.turnoAtor];
+    if (checarPerderTurno(ator)) {
+      b.turnoAtor++;
+      setTimeout(proximoTurno, 700);
+      return;
+    }
+    renderBatalha();
+  } else {
+    // ENEMY phase
+    while (b.turnoAtor < b.inimigos.length && b.inimigos[b.turnoAtor].hp <= 0) {
+      b.turnoAtor++;
+    }
+    if (b.turnoAtor >= b.inimigos.length) {
+      // Fim do round completo
+      processarCondicoesTurno(b.inimigos);
+      b.fase = "player";
+      b.turnoAtor = 0;
+      renderBatalha();
+      setTimeout(proximoTurno, 500);
+      return;
+    }
+    const ator = b.inimigos[b.turnoAtor];
+    if (checarPerderTurno(ator)) {
+      b.turnoAtor++;
+      setTimeout(proximoTurno, 700);
+      return;
+    }
+    setTimeout(() => turnoIA(ator), 600);
   }
+}
 
-  const base   = ataque.poder + (atacante.ataque + atacante.buffAtk);
-  const def    = alvo.defesa;
-  const bruto  = Math.max(1, base - def);
-  const variancia = rand(-2, 3);
-  const critico = Math.random() < 0.12;
-  let dano = Math.round(bruto * multi) + variancia;
-  if (critico) dano = Math.round(dano * 1.5);
+function checarPerderTurno(c) {
+  for (const cd of c.condicoes) {
+    const def = getCondicao(cd.id);
+    if (def.chancePerderTurno && Math.random() < def.chancePerderTurno) {
+      log(`${c.nome} está ${def.nome} e perdeu o turno!`, "weak");
+      return true;
+    }
+  }
+  return false;
+}
 
-  return {
-    dano: Math.max(1, dano),
-    tipoEf: tipoEf,
-    critico: critico
-  };
+function processarCondicoesTurno(combatentes) {
+  combatentes.forEach(c => {
+    if (c.hp <= 0) return;
+    const novas = [];
+    c.condicoes.forEach(cd => {
+      const def = getCondicao(cd.id);
+      if (def.danoPorTurno) {
+        c.hp = Math.max(0, c.hp - def.danoPorTurno);
+        log(`${c.nome} sofre ${def.danoPorTurno} de dano por ${def.nome}.`, "weak");
+        if (c.hp <= 0) log(`${c.nome} foi nocauteado!`, "weak");
+      }
+      if (def.curaPorTurno) {
+        const cura = Math.min(def.curaPorTurno, c.hpMax - c.hp);
+        if (cura > 0) {
+          c.hp += cura;
+          log(`${c.nome} recupera ${cura} HP por ${def.nome}.`, "system");
+        }
+      }
+      cd.turnos--;
+      if (cd.turnos > 0) novas.push(cd);
+      else log(`${c.nome}: ${def.nome} terminou.`, "");
+    });
+    c.condicoes = novas;
+  });
 }
 
 
-/* ----- Menu principal ----- */
+/* ---------- MENU PRINCIPAL ---------- */
 function bindMenuBatalha() {
   document.querySelectorAll("#battle-menu .menu-btn").forEach(btn => {
     btn.onclick = () => {
-      if (state.batalha.acabou || state.batalha.turno !== "player") return;
+      const b = state.batalha;
+      if (!b || b.acabou || b.fase !== "player") return;
+      SFX.menu();
       const action = btn.getAttribute("data-action");
       if (action === "attack") abrirSubmenuAtaques();
       else if (action === "item") abrirSubmenuItens();
@@ -1057,343 +1550,491 @@ function bindMenuBatalha() {
   });
 }
 
+function getAtorAtual() {
+  const b = state.batalha;
+  return b.partyEmCampo[b.turnoAtor];
+}
 
 function abrirSubmenuAtaques() {
   const sub = document.getElementById("battle-submenu");
   sub.classList.remove("hidden");
   sub.innerHTML = "";
-  const player = state.party[state.ativo];
-  player.ataques.forEach(aid => {
+  const ator = getAtorAtual();
+  ator.ataques.forEach(aid => {
     const a = getAtaque(aid);
     if (!a) return;
     const item = document.createElement("div");
-    item.className = "submenu-item" + (player.foco < a.custoFoco ? " disabled" : "");
+    const disabled = ator.foco < a.custoFoco;
+    item.className = "submenu-item" + (disabled ? " disabled" : "");
     item.setAttribute("data-testid", `atk-${a.id}`);
+    const tagTipo = ({
+      ataque: "ATK", buff: "BUFF", debuff: "DEBUFF", cura: "CURA", misto: "MIX"
+    })[a.tipoAcao] || "ATK";
     item.innerHTML = `
-      <span class="sub-title">${a.nome}</span>
-      <span class="sub-desc">PWR ${a.poder} · FOCO ${a.custoFoco}<br/>${a.descricao}</span>
+      <span class="sub-title">${a.nome} <span class="tag">${tagTipo}</span></span>
+      <span class="sub-desc">PWR ${a.poder} · FOCO ${a.custoFoco} · PREC ${a.precisao}%${a.chanceCrit ? ` · CRIT ${a.chanceCrit}%` : ""}<br/>${a.descricao}</span>
     `;
-    if (player.foco >= a.custoFoco) {
-      item.onclick = () => executarAtaque(a);
-    }
+    if (!disabled) item.onclick = () => { SFX.menu(); escolherAlvoPara(a); };
     sub.appendChild(item);
   });
-
-  const cancel = document.createElement("div");
-  cancel.className = "submenu-item";
-  cancel.innerHTML = `<span class="sub-title">Voltar</span><span class="sub-desc">Cancela ação.</span>`;
-  cancel.onclick = () => sub.classList.add("hidden");
-  sub.appendChild(cancel);
+  adicionarBotaoVoltar(sub);
 }
 
 function abrirSubmenuItens() {
   const sub = document.getElementById("battle-submenu");
   sub.classList.remove("hidden");
   sub.innerHTML = "";
-
-  let temItem = false;
+  let tem = false;
   Object.entries(state.inventario).forEach(([iid, qtd]) => {
     if (qtd <= 0) return;
-    temItem = true;
+    tem = true;
     const it = getItem(iid);
     const el = document.createElement("div");
     el.className = "submenu-item";
     el.setAttribute("data-testid", `item-${iid}`);
-    el.innerHTML = `
-      <span class="sub-title">${it.nome} ×${qtd}</span>
-      <span class="sub-desc">${it.descricao}</span>
-    `;
-    el.onclick = () => usarItem(it);
+    el.innerHTML = `<span class="sub-title">${it.nome} ×${qtd}</span><span class="sub-desc">${it.descricao}</span>`;
+    el.onclick = () => { SFX.menu(); escolherAlvoParaItem(it); };
     sub.appendChild(el);
   });
-
-  if (!temItem) {
-    const vazio = document.createElement("div");
-    vazio.className = "submenu-item disabled";
-    vazio.innerHTML = `<span class="sub-title">Vazio</span><span class="sub-desc">Você não tem itens.</span>`;
-    sub.appendChild(vazio);
+  if (!tem) {
+    const v = document.createElement("div");
+    v.className = "submenu-item disabled";
+    v.innerHTML = `<span class="sub-title">Vazio</span><span class="sub-desc">Sem itens.</span>`;
+    sub.appendChild(v);
   }
-
-  const cancel = document.createElement("div");
-  cancel.className = "submenu-item";
-  cancel.innerHTML = `<span class="sub-title">Voltar</span><span class="sub-desc">Cancela ação.</span>`;
-  cancel.onclick = () => sub.classList.add("hidden");
-  sub.appendChild(cancel);
+  adicionarBotaoVoltar(sub);
 }
 
 function abrirSubmenuTroca() {
   const sub = document.getElementById("battle-submenu");
   sub.classList.remove("hidden");
   sub.innerHTML = "";
-
-  if (state.party.length <= 1) {
+  const b = state.batalha;
+  const reservas = state.party.filter(p => !b.partyEmCampo.includes(p) && p.hp > 0);
+  if (reservas.length === 0) {
     const v = document.createElement("div");
     v.className = "submenu-item disabled";
-    v.innerHTML = `<span class="sub-title">Sem aliados</span><span class="sub-desc">Você está sozinho.</span>`;
+    v.innerHTML = `<span class="sub-title">Sem reservas</span><span class="sub-desc">Todos já estão em campo.</span>`;
     sub.appendChild(v);
   } else {
-    state.party.forEach((p, idx) => {
-      if (idx === state.ativo) return;
+    reservas.forEach(p => {
       const el = document.createElement("div");
-      el.className = "submenu-item" + (p.hp <= 0 ? " disabled" : "");
+      el.className = "submenu-item";
       el.setAttribute("data-testid", `swap-${p.id}`);
       el.innerHTML = `
         <span class="sub-title">${p.nome} Nv${p.nivel}</span>
         <span class="sub-desc">${p.estereotipo} · HP ${p.hp}/${p.hpMax}</span>
       `;
-      if (p.hp > 0) {
-        el.onclick = () => trocarAluno(idx);
-      }
+      el.onclick = () => { SFX.menu(); trocarPorReserva(p); };
       sub.appendChild(el);
     });
   }
+  adicionarBotaoVoltar(sub);
+}
 
+function adicionarBotaoVoltar(sub) {
   const cancel = document.createElement("div");
   cancel.className = "submenu-item";
   cancel.innerHTML = `<span class="sub-title">Voltar</span><span class="sub-desc">Cancela ação.</span>`;
-  cancel.onclick = () => sub.classList.add("hidden");
+  cancel.onclick = () => { SFX.menu(); sub.classList.add("hidden"); };
   sub.appendChild(cancel);
 }
 
 
-/* ----- Ações de batalha ----- */
-function executarAtaque(ataque) {
+/* ---------- TARGETING ---------- */
+function escolherAlvoPara(ataque) {
   const b = state.batalha;
-  if (!b || b.acabou) return;
-  const player = state.party[state.ativo];
+  const ator = getAtorAtual();
 
-  if (player.foco < ataque.custoFoco) {
-    log("Foco insuficiente.", "weak");
-    return;
-  }
-  player.foco -= ataque.custoFoco;
+  // Auto-target casos
+  if (ataque.alvo === "self") { executarAcao(ator, ataque, [ator]); return; }
+  if (ataque.alvo === "todos_inimigos") { executarAcao(ator, ataque, b.inimigos.filter(i => i.hp > 0)); return; }
+  if (ataque.alvo === "todos_aliados")  { executarAcao(ator, ataque, b.partyEmCampo.filter(p => p.hp > 0)); return; }
 
-  const r = calcularDano(player, b.inimigo, ataque);
-  b.inimigo.hp = Math.max(0, b.inimigo.hp - r.dano);
+  // Single target → mostrar UI
+  const targets = ataque.alvo === "aliado_unico"
+    ? b.partyEmCampo.filter(p => p.hp > 0)
+    : b.inimigos.filter(i => i.hp > 0);
 
-  log(`${player.nome} usou ${ataque.nome}!`);
-  if (r.critico) log(`CRÍTICO! ${r.dano} de dano em ${b.inimigo.nome}.`, "crit");
-  else if (r.tipoEf === "forte") log(`Super eficaz! ${r.dano} de dano.`, "strong");
-  else if (r.tipoEf === "fraco") log(`Pouco eficaz... ${r.dano} de dano.`, "weak");
-  else log(`${r.dano} de dano.`);
-
-  shakeSprite("enemy-sprite");
-  document.getElementById("battle-submenu").classList.add("hidden");
-  renderBatalha();
-
-  if (b.inimigo.hp <= 0) {
-    finalizarVitoria();
-    return;
-  }
-  setTimeout(turnoInimigo, 700);
+  abrirAlvoSelector(targets, (alvo) => executarAcao(ator, ataque, [alvo]), ataque.alvo === "aliado_unico");
 }
 
-function usarItem(item) {
+function escolherAlvoParaItem(item) {
   const b = state.batalha;
-  if (!b || b.acabou) return;
-  const player = state.party[state.ativo];
+  const ator = getAtorAtual();
+  if (item.alvo === "self") { usarItem(ator, item, ator); return; }
+  const targets = b.partyEmCampo.filter(p => p.hp > 0);
+  abrirAlvoSelector(targets, (alvo) => usarItem(ator, item, alvo), true);
+}
 
+function abrirAlvoSelector(targets, callback, isAlly) {
+  const sub = document.getElementById("battle-submenu");
+  const tgt = document.getElementById("battle-target");
+  sub.classList.add("hidden");
+  tgt.classList.remove("hidden");
+  tgt.innerHTML = `<div class="target-header">Escolha o alvo (${isAlly ? "aliado" : "inimigo"}):</div>`;
+  const list = document.createElement("div");
+  list.className = "target-list";
+  targets.forEach((t, idx) => {
+    const el = document.createElement("div");
+    el.className = "target-card";
+    el.setAttribute("data-testid", `target-${t.uid}`);
+    el.innerHTML = `
+      <strong>${t.nome}</strong> Nv${t.nivel} (${t.estereotipo})<br/>
+      HP ${t.hp}/${t.hpMax}
+    `;
+    el.onclick = () => { SFX.menu(); tgt.classList.add("hidden"); callback(t); };
+    list.appendChild(el);
+  });
+  const cancel = document.createElement("button");
+  cancel.className = "pixel-btn small";
+  cancel.textContent = "Voltar";
+  cancel.setAttribute("data-testid", "target-cancel");
+  cancel.onclick = () => { SFX.menu(); tgt.classList.add("hidden"); };
+  tgt.appendChild(list);
+  tgt.appendChild(cancel);
+}
+
+
+/* ---------- CÁLCULO DE DANO/EFEITOS ---------- */
+function statsComCondicoes(c) {
+  let atk = c.ataque + (c.buffAtk || 0);
+  let def = c.defesa;
+  let critBonus = 0;
+  let precBonus = 0;
+  let chanceAtacarAliado = 0;
+  c.condicoes.forEach(cd => {
+    const d = getCondicao(cd.id);
+    if (d.modAtk)   atk *= (1 + d.modAtk);
+    if (d.modDef)   def *= (1 + d.modDef);
+    if (d.modCrit)  critBonus += d.modCrit;
+    if (d.modPrecisao) precBonus += d.modPrecisao;
+    if (d.chanceAtacarAliado) chanceAtacarAliado = Math.max(chanceAtacarAliado, d.chanceAtacarAliado);
+  });
+  return { atk: Math.round(atk), def: Math.round(def), critBonus, precBonus, chanceAtacarAliado };
+}
+
+function calcularDano(atacante, alvo, ataque) {
+  const s = statsComCondicoes(atacante);
+  const sa = statsComCondicoes(alvo);
+
+  // Precisão
+  const precisao = clamp(ataque.precisao + s.precBonus, 5, 100);
+  if (Math.random() * 100 > precisao) {
+    return { errou: true };
+  }
+
+  let multi = 1.0; let tipoEf = "normal";
+  if (VANTAGENS[atacante.estereotipo] === alvo.estereotipo) { multi = 1.5; tipoEf = "forte"; }
+  else if (DESVANTAGENS[atacante.estereotipo] === alvo.estereotipo) { multi = 0.5; tipoEf = "fraco"; }
+
+  const base = ataque.poder + s.atk;
+  const bruto = Math.max(1, base - sa.def);
+  const variancia = rand(-2, 3);
+  const critFinal = clamp(ataque.chanceCrit + s.critBonus, 0, 100);
+  const critico = Math.random() * 100 < critFinal;
+  let dano = Math.round(bruto * multi) + variancia;
+  if (critico) dano = Math.round(dano * 1.5);
+
+  return { dano: Math.max(1, dano), tipoEf, critico };
+}
+
+function aplicarEfeitos(usuario, alvo, ataque) {
+  if (!ataque.efeitos) return;
+  ataque.efeitos.forEach(e => {
+    if (Math.random() * 100 > e.chance) return;
+    const target = e.target === "usuario" ? usuario : alvo;
+    if (target.hp <= 0) return;
+    // Evita stack do mesmo
+    const existente = target.condicoes.find(c => c.id === e.condicao);
+    if (existente) { existente.turnos = Math.max(existente.turnos, e.turnos); }
+    else target.condicoes.push({ id: e.condicao, turnos: e.turnos });
+    const def = getCondicao(e.condicao);
+    log(`${target.nome} agora está ${def.nome}.`, "system");
+  });
+}
+
+
+/* ---------- EXECUTAR AÇÃO ---------- */
+function executarAcao(ator, ataque, alvos) {
+  if (ataque.custoFoco > 0) ator.foco = Math.max(0, ator.foco - ataque.custoFoco);
+
+  log(`${ator.nome} usou ${ataque.nome}!`);
+
+  // Confuso pode redirecionar para aliado
+  const s = statsComCondicoes(ator);
+  if (s.chanceAtacarAliado && ataque.tipoAcao !== "cura" && ataque.tipoAcao !== "buff" && Math.random() < s.chanceAtacarAliado) {
+    const b = state.batalha;
+    const aliadosVivos = (b.partyEmCampo.includes(ator) ? b.partyEmCampo : b.inimigos).filter(x => x.hp > 0 && x !== ator);
+    if (aliadosVivos.length > 0) {
+      const novoAlvo = aliadosVivos[rand(0, aliadosVivos.length - 1)];
+      log(`Está confuso e atacou ${novoAlvo.nome}!`, "weak");
+      alvos = [novoAlvo];
+    }
+  }
+
+  alvos.forEach(alvo => {
+    if (alvo.hp <= 0 && ataque.tipoAcao !== "cura") return;
+
+    if (ataque.tipoAcao === "cura") {
+      const cura = Math.min(ataque.cura || 0, alvo.hpMax - alvo.hp);
+      alvo.hp += cura;
+      log(`${alvo.nome} recupera ${cura} HP.`, "system");
+      SFX.heal();
+      aplicarEfeitos(ator, alvo, ataque);
+      return;
+    }
+    if (ataque.tipoAcao === "buff") {
+      log(`${alvo.nome} foi fortalecido!`, "system");
+      SFX.buff();
+      aplicarEfeitos(ator, alvo, ataque);
+      return;
+    }
+    if (ataque.tipoAcao === "debuff") {
+      const acertou = Math.random() * 100 <= clamp(ataque.precisao + statsComCondicoes(ator).precBonus, 5, 100);
+      if (!acertou) { log(`Errou em ${alvo.nome}!`, "weak"); SFX.miss(); return; }
+      SFX.debuff();
+      aplicarEfeitos(ator, alvo, ataque);
+      return;
+    }
+    // ataque ou misto
+    const r = calcularDano(ator, alvo, ataque);
+    if (r.errou) { log(`Errou ${alvo.nome}!`, "weak"); SFX.miss(); return; }
+    alvo.hp = Math.max(0, alvo.hp - r.dano);
+    if (r.critico)            { log(`CRÍTICO! ${r.dano} em ${alvo.nome}.`, "crit"); SFX.crit(); }
+    else if (r.tipoEf === "forte") { log(`Super eficaz! ${r.dano} em ${alvo.nome}.`, "strong"); SFX.hit(); }
+    else if (r.tipoEf === "fraco") { log(`Pouco eficaz... ${r.dano} em ${alvo.nome}.`, "weak"); SFX.hit(); }
+    else                      { log(`${r.dano} em ${alvo.nome}.`); SFX.hit(); }
+    if (alvo.hp <= 0) log(`${alvo.nome} foi nocauteado!`, "weak");
+    aplicarEfeitos(ator, alvo, ataque);
+  });
+
+  renderBatalha();
+  avancarAtor();
+}
+
+function usarItem(ator, item, alvo) {
+  log(`${ator.nome} usou ${item.nome} em ${alvo.nome}.`, "system");
   if (item.tipo === "cura_hp") {
-    const cura = Math.min(item.valor, player.hpMax - player.hp);
-    player.hp += cura;
-    log(`${player.nome} usou ${item.nome} e recuperou ${cura} HP.`, "system");
+    const cura = Math.min(item.valor, alvo.hpMax - alvo.hp);
+    alvo.hp += cura;
+    log(`${alvo.nome} recupera ${cura} HP.`, "system");
+    SFX.heal();
   } else if (item.tipo === "cura_foco") {
-    const cura = Math.min(item.valor, player.focoMax - player.foco);
-    player.foco += cura;
-    log(`${player.nome} usou ${item.nome} e recuperou ${cura} Foco.`, "system");
+    const cura = Math.min(item.valor, alvo.focoMax - alvo.foco);
+    alvo.foco += cura;
+    log(`${alvo.nome} recupera ${cura} Foco.`, "system");
+    SFX.heal();
   } else if (item.tipo === "buff_atk") {
-    player.buffAtk += item.valor;
-    log(`${player.nome} usou ${item.nome}. +${item.valor} ATK nesta batalha.`, "system");
+    ator.buffAtk += item.valor;
+    log(`${ator.nome}: +${item.valor} ATK.`, "system");
+    SFX.buff();
   } else if (item.tipo === "cura_total") {
-    player.hp = player.hpMax;
-    player.foco = player.focoMax;
-    log(`${player.nome} usou ${item.nome}. Totalmente restaurado!`, "system");
+    alvo.hp = alvo.hpMax; alvo.foco = alvo.focoMax;
+    log(`${alvo.nome} totalmente restaurado!`, "system");
+    SFX.heal();
+  } else if (item.tipo === "limpar_condicoes") {
+    const negativas = ["cansado","exausto","atordoado","sangrando","em_chamas","confuso","drogado"];
+    alvo.condicoes = alvo.condicoes.filter(c => !negativas.includes(c.id));
+    log(`${alvo.nome}: condições negativas removidas.`, "system");
+    SFX.buff();
   }
   state.inventario[item.id]--;
   if (state.inventario[item.id] <= 0) delete state.inventario[item.id];
-
-  document.getElementById("battle-submenu").classList.add("hidden");
   renderBatalha();
-  setTimeout(turnoInimigo, 700);
+  avancarAtor();
 }
 
-function trocarAluno(idx) {
-  state.ativo = idx;
-  log(`Você trocou para ${state.party[idx].nome}!`, "system");
-  document.getElementById("battle-submenu").classList.add("hidden");
+function trocarPorReserva(reserva) {
+  const b = state.batalha;
+  const ator = getAtorAtual();
+  const idx = b.partyEmCampo.indexOf(ator);
+  b.partyEmCampo[idx] = reserva;
+  log(`${ator.nome} sai. ${reserva.nome} entra em campo!`, "system");
   renderBatalha();
-  setTimeout(turnoInimigo, 700);
+  avancarAtor();
 }
 
 function tentarFugir() {
   const b = state.batalha;
-  if (!b || b.acabou) return;
-  const chance = 0.6;
-  if (Math.random() < chance) {
-    log("Você fugiu da batalha covardemente!", "system");
+  if (Math.random() < 0.6) {
+    log("Você fugiu da batalha!", "system");
     b.acabou = true;
-    setTimeout(() => {
-      renderMapa();
-      mostrarTela("screen-map");
-    }, 1000);
+    setTimeout(() => { renderMapa(); mostrarTela("screen-map"); }, 900);
   } else {
     log("Não conseguiu fugir!", "weak");
-    setTimeout(turnoInimigo, 700);
+    avancarAtor();
   }
 }
 
-function turnoInimigo() {
+function avancarAtor() {
   const b = state.batalha;
-  if (!b || b.acabou) return;
-  const player  = state.party[state.ativo];
-  const inimigo = b.inimigo;
+  if (b.inimigos.every(i => i.hp <= 0)) { finalizarVitoria(); return; }
+  if (b.partyEmCampo.every(p => p.hp <= 0)) { finalizarDerrota(); return; }
+  b.turnoAtor++;
+  setTimeout(proximoTurno, 600);
+}
 
-  // IA simples: usa um ataque aleatório que tenha foco
-  const disponiveis = inimigo.ataques
-    .map(id => getAtaque(id))
-    .filter(a => a && inimigo.foco >= a.custoFoco);
 
-  const escolhido = disponiveis.length > 0
-    ? disponiveis[rand(0, disponiveis.length - 1)]
+/* ---------- IA INIMIGO ---------- */
+function turnoIA(inimigo) {
+  const b = state.batalha;
+  const acoesPossiveis = inimigo.ataques.map(id => getAtaque(id)).filter(a => a && inimigo.foco >= a.custoFoco);
+  const escolhido = acoesPossiveis.length > 0
+    ? acoesPossiveis[rand(0, acoesPossiveis.length - 1)]
     : getAtaque("soco_basico");
 
-  inimigo.foco = Math.max(0, inimigo.foco - escolhido.custoFoco);
-  const r = calcularDano(inimigo, player, escolhido);
-  player.hp = Math.max(0, player.hp - r.dano);
+  let alvos;
+  const aliadosInimigos = b.inimigos.filter(i => i.hp > 0);
+  const adversarios   = b.partyEmCampo.filter(p => p.hp > 0);
 
-  log(`${inimigo.nome} usou ${escolhido.nome}!`);
-  if (r.critico) log(`CRÍTICO! ${r.dano} de dano em você.`, "crit");
-  else if (r.tipoEf === "forte") log(`Super eficaz! ${r.dano} de dano.`, "strong");
-  else if (r.tipoEf === "fraco") log(`Pouco eficaz... ${r.dano} de dano.`, "weak");
-  else log(`${r.dano} de dano.`);
+  if (escolhido.alvo === "self") alvos = [inimigo];
+  else if (escolhido.alvo === "todos_inimigos") alvos = adversarios; // do ponto de vista do inimigo, "inimigo" = player
+  else if (escolhido.alvo === "todos_aliados")  alvos = aliadosInimigos;
+  else if (escolhido.alvo === "aliado_unico")   alvos = [aliadosInimigos[rand(0, aliadosInimigos.length - 1)]];
+  else                                          alvos = [adversarios[rand(0, adversarios.length - 1)]];
 
-  shakeSprite("player-sprite");
-  renderBatalha();
+  // Inverte log perspectiva: o IA usa player como "alvo inimigo"
+  // Mas executarAcao já trata genérico — só precisa garantir alvos certos.
+  // Vamos imitar executarAcao mas considerando ator=inimigo, alvos podem ser player ou inimigo aliado
+  executarAcaoIA(inimigo, escolhido, alvos);
+}
 
-  if (player.hp <= 0) {
-    log(`${player.nome} foi nocauteado!`, "weak");
-    // tentar trocar automaticamente
-    const proximoVivo = state.party.findIndex(p => p.hp > 0);
-    if (proximoVivo === -1) {
-      finalizarDerrota();
-    } else {
-      state.ativo = proximoVivo;
-      log(`${state.party[proximoVivo].nome} entra em campo!`, "system");
-      renderBatalha();
+function executarAcaoIA(ator, ataque, alvos) {
+  if (ataque.custoFoco > 0) ator.foco = Math.max(0, ator.foco - ataque.custoFoco);
+  log(`${ator.nome} usou ${ataque.nome}!`);
+
+  alvos.forEach(alvo => {
+    if (!alvo || alvo.hp <= 0 && ataque.tipoAcao !== "cura") return;
+    if (ataque.tipoAcao === "cura") {
+      const cura = Math.min(ataque.cura || 0, alvo.hpMax - alvo.hp);
+      alvo.hp += cura;
+      log(`${alvo.nome} recupera ${cura} HP.`, "system");
+      SFX.heal(); aplicarEfeitos(ator, alvo, ataque); return;
     }
-  }
+    if (ataque.tipoAcao === "buff") {
+      log(`${alvo.nome} foi fortalecido!`, "system");
+      SFX.buff(); aplicarEfeitos(ator, alvo, ataque); return;
+    }
+    if (ataque.tipoAcao === "debuff") {
+      SFX.debuff(); aplicarEfeitos(ator, alvo, ataque); return;
+    }
+    const r = calcularDano(ator, alvo, ataque);
+    if (r.errou) { log(`Errou ${alvo.nome}!`, "weak"); SFX.miss(); return; }
+    alvo.hp = Math.max(0, alvo.hp - r.dano);
+    if (r.critico)            { log(`CRÍTICO! ${r.dano} em ${alvo.nome}.`, "crit"); SFX.crit(); }
+    else if (r.tipoEf === "forte") { log(`Super eficaz! ${r.dano} em ${alvo.nome}.`, "strong"); SFX.hit(); }
+    else if (r.tipoEf === "fraco") { log(`Pouco eficaz... ${r.dano} em ${alvo.nome}.`, "weak"); SFX.hit(); }
+    else                      { log(`${r.dano} em ${alvo.nome}.`); SFX.hit(); }
+    if (alvo.hp <= 0) log(`${alvo.nome} foi nocauteado!`, "weak");
+    aplicarEfeitos(ator, alvo, ataque);
+  });
+
+  renderBatalha();
+  avancarAtor();
 }
 
-function shakeSprite(id) {
-  const el = document.getElementById(id);
-  el.classList.remove("shake");
-  void el.offsetWidth;
-  el.classList.add("shake");
-}
 
-
-/* ----- Fim de batalha ----- */
+/* ---------- FIM DE BATALHA ---------- */
 function finalizarVitoria() {
   const b = state.batalha;
+  if (b.acabou) return;
   b.acabou = true;
-  const player = state.party[state.ativo];
-  const ganhoXp = 20 + b.inimigo.nivel * 10;
-  log(`Vitória! +${ganhoXp} XP para ${player.nome}.`, "system");
-  player.xp += ganhoXp;
+  SFX.victory();
 
-  // Level up
-  while (player.xp >= xpParaProximoNivel(player.nivel)) {
-    player.xp -= xpParaProximoNivel(player.nivel);
-    player.nivel++;
-    player.hpMax  += 10; player.hp = player.hpMax;
-    player.focoMax += 5; player.foco = player.focoMax;
-    player.ataque += 2;
-    player.defesa += 1;
-    log(`${player.nome} subiu para o nível ${player.nivel}!`, "crit");
+  const xpTotal = b.inimigos.reduce((s, i) => s + (20 + i.nivel * 10), 0);
+  // Distribui XP entre party em campo
+  const vivos = b.partyEmCampo.filter(p => p.hp > 0);
+  const xpPorAluno = vivos.length > 0 ? Math.floor(xpTotal / vivos.length) : xpTotal;
+  log(`Vitória! +${xpPorAluno} XP para cada aluno em campo.`, "system");
+  vivos.forEach(p => ganharXp(p, xpPorAluno));
 
-    // Desbloquear novos ataques
-    const base = getPersonagem(player.id);
-    if (base) {
-      const novos = ATAQUES.filter(a =>
-        (a.estereotipoDono === base.estereotipo || a.estereotipoDono === "*") &&
-        a.nivelMinimo <= player.nivel &&
-        !player.ataques.includes(a.id)
-      );
-      novos.forEach(a => {
-        player.ataques.push(a.id);
-        log(`Novo ataque aprendido: ${a.nome}!`, "crit");
-      });
-    }
+  // Limpa condições e buff
+  state.party.forEach(p => { p.condicoes = []; p.buffAtk = 0; });
+
+  // Marca derrotados
+  b.inimigosBaseIds.forEach(id => { if (!state.derrotados.includes(id)) state.derrotados.push(id); });
+
+  // Loot
+  if (Math.random() < 0.6) {
+    const drop = ITENS[rand(0, ITENS.length - 2)];
+    state.inventario[drop.id] = (state.inventario[drop.id] || 0) + 1;
+    log(`Você encontrou: ${drop.nome}!`, "system");
   }
 
-  // Buff de itens reseta
-  player.buffAtk = 0;
+  // Recrutamento (1 chance no grupo)
+  const podeRecrutar = state.party.length < 6;
+  const candidato = podeRecrutar
+    ? b.inimigosBaseIds.find(id => !state.party.some(p => p.id === id))
+    : null;
 
-  state.derrotados.push(b.inimigoBaseId);
-
-  // Chance de recrutar (40%)
-  const podeRecrutar = state.party.length < 6
-    && !state.party.some(p => p.id === b.inimigoBaseId);
-
-  if (podeRecrutar && Math.random() < 0.4) {
+  if (candidato && Math.random() < 0.4) {
+    const base = getPersonagem(candidato);
     setTimeout(() => {
-      abrirModal(
-        "Recrutar aluno?",
-        `${b.inimigo.nome} (${b.inimigo.estereotipo}) parece disposto a se juntar à sua party. Aceitar?`,
+      abrirModal("Recrutar aluno?",
+        `${base.nome} (${base.estereotipo}) parece disposto a se juntar à party. Aceitar?`,
         [
-          { label: "RECUSAR", testid: "recruit-no",
-            onClick: () => voltarAoMapa() },
-          { label: "RECRUTAR", testid: "recruit-yes",
-            onClick: () => {
-              const base = getPersonagem(b.inimigoBaseId);
-              const novo = instanciarPersonagem(base, b.inimigo.nivel);
+          { label: "RECUSAR", testid: "recruit-no", onClick: () => voltarAoMapa() },
+          { label: "RECRUTAR", testid: "recruit-yes", onClick: () => {
+              const novo = instanciarPersonagem(base, Math.max(1, state.party[state.ativo].nivel - 1));
               state.party.push(novo);
-              salvarJogo();
-              voltarAoMapa();
+              salvarJogo(); voltarAoMapa();
             } }
         ]
       );
     }, 800);
   } else {
-    // Loot aleatório
-    if (Math.random() < 0.5) {
-      const drop = ITENS[rand(0, ITENS.length - 2)]; // exclui amuleto raro
-      state.inventario[drop.id] = (state.inventario[drop.id] || 0) + 1;
-      log(`Você encontrou: ${drop.nome}!`, "system");
-    }
     setTimeout(voltarAoMapa, 1400);
   }
-
   salvarJogo();
+}
+
+function ganharXp(p, xp) {
+  p.xp += xp;
+  while (p.xp >= xpParaProximoNivel(p.nivel)) {
+    p.xp -= xpParaProximoNivel(p.nivel);
+    p.nivel++;
+    p.hpMax  += 10; p.hp = p.hpMax;
+    p.focoMax += 5; p.foco = p.focoMax;
+    p.ataque += 2;  p.defesa += 1;
+    log(`${p.nome} subiu para nível ${p.nivel}!`, "crit");
+    SFX.levelUp();
+    const base = getPersonagem(p.id);
+    if (base) {
+      const novos = ATAQUES.filter(a =>
+        (a.estereotipoDono === base.estereotipo || a.estereotipoDono === "*") &&
+        a.nivelMinimo <= p.nivel && !p.ataques.includes(a.id)
+      );
+      novos.forEach(a => { p.ataques.push(a.id); log(`Aprendeu: ${a.nome}!`, "crit"); });
+    }
+  }
 }
 
 function finalizarDerrota() {
   state.batalha.acabou = true;
-  log("Você foi derrotado...", "weak");
+  SFX.defeat();
+  log("Sua party foi derrotada...", "weak");
   setTimeout(() => {
-    abrirModal(
-      "Você apagou.",
-      "Toda a sua party foi nocauteada. Você acorda na enfermaria. Toda a party é restaurada, mas o save permanece.",
-      [
-        { label: "VOLTAR AO MAPA", testid: "defeat-back",
-          onClick: () => {
-            // restaurar HP/foco
-            state.party.forEach(p => { p.hp = p.hpMax; p.foco = p.focoMax; });
-            state.ativo = 0;
-            salvarJogo();
-            renderMapa();
-            mostrarTela("screen-map");
-          } }
-      ]
-    );
-  }, 800);
+    abrirModal("Você apagou.",
+      "Toda sua party foi nocauteada. Você acorda na enfermaria.",
+      [{ label: "VOLTAR AO MAPA", testid: "defeat-back",
+         onClick: () => {
+           state.party.forEach(p => { p.hp = p.hpMax; p.foco = p.focoMax; p.condicoes = []; p.buffAtk = 0; });
+           state.ativo = 0; salvarJogo(); renderMapa(); mostrarTela("screen-map");
+         } }]);
+  }, 900);
 }
 
 function voltarAoMapa() {
-  // Curar 25% após batalha
-  const player = state.party[state.ativo];
-  player.hp = Math.min(player.hpMax, player.hp + Math.floor(player.hpMax * 0.25));
-  player.foco = Math.min(player.focoMax, player.foco + Math.floor(player.focoMax * 0.25));
+  // Cura leve (20%) na party em campo
+  const b = state.batalha;
+  if (b) {
+    b.partyEmCampo.forEach(p => {
+      p.hp = Math.min(p.hpMax, p.hp + Math.floor(p.hpMax * 0.20));
+      p.foco = Math.min(p.focoMax, p.foco + Math.floor(p.focoMax * 0.20));
+      p.condicoes = [];
+    });
+  }
   salvarJogo();
   renderMapa();
   mostrarTela("screen-map");
@@ -1401,67 +2042,70 @@ function voltarAoMapa() {
 
 
 /* =========================================================
-   16) PARTY VIEW (modal)
+   18) PARTY MODAL
    ========================================================= */
 function abrirParty() {
   const lista = state.party.map((p, i) =>
     `${i === state.ativo ? "→ " : "  "}${p.nome} Nv${p.nivel} (${p.estereotipo}) — HP ${p.hp}/${p.hpMax} · Foco ${p.foco}/${p.focoMax}`
   ).join("\n");
-
   const itensTxt = Object.entries(state.inventario)
-    .map(([id, qtd]) => `${getItem(id)?.nome} ×${qtd}`)
-    .join(" · ") || "Nenhum item";
+    .map(([id, qtd]) => `${getItem(id)?.nome} ×${qtd}`).join(" · ") || "Nenhum item";
 
-  abrirModal(
-    "Sua Party",
-    `${lista}\n\nItens: ${itensTxt}`,
+  abrirModal("Sua Party",
+    `${lista}\n\nItens: ${itensTxt}\n\nNa batalha, os 3 primeiros vivos entram em campo.`,
     [
-      { label: "TROCAR ATIVO", testid: "modal-swap-active",
-        onClick: () => trocarAtivoMapa() },
+      { label: "REORDENAR", testid: "modal-reorder", onClick: () => reordenarParty() },
       { label: "FECHAR", testid: "modal-party-close" }
-    ]
-  );
+    ]);
 }
 
-function trocarAtivoMapa() {
+function reordenarParty() {
   if (state.party.length <= 1) return;
-  state.ativo = (state.ativo + 1) % state.party.length;
-  // pular nocauteados
-  let safety = 0;
-  while (state.party[state.ativo].hp <= 0 && safety < state.party.length) {
-    state.ativo = (state.ativo + 1) % state.party.length;
-    safety++;
-  }
+  // Move primeiro pro final
+  const primeiro = state.party.shift();
+  state.party.push(primeiro);
+  state.ativo = 0;
   salvarJogo();
   renderMapa();
+  abrirParty();
 }
 
 
 /* =========================================================
-   17) BOOT
+   19) BOOT
    ========================================================= */
 window.addEventListener("DOMContentLoaded", () => {
   initTitulo();
   bindMenuBatalha();
 
-  document.getElementById("btn-party").onclick = abrirParty;
+  document.getElementById("btn-party").onclick = () => { SFX.menu(); abrirParty(); };
   document.getElementById("btn-save").onclick = () => {
-    if (salvarJogo()) {
-      abrirModal("Salvo!", "Seu progresso foi salvo no navegador.", [
-        { label: "OK", testid: "modal-saved-ok" }
-      ]);
-    }
+    SFX.menu();
+    if (salvarJogo()) abrirModal("Salvo!", "Progresso salvo no navegador.", [{ label: "OK", testid: "modal-saved-ok" }]);
   };
   document.getElementById("btn-quit").onclick = () => {
-    abrirModal("Sair para o título?",
-      "O progresso é mantido (já salvo automaticamente).",
-      [
-        { label: "CANCELAR", testid: "modal-quit-cancel" },
-        { label: "SAIR", danger: true, testid: "modal-quit-confirm",
-          onClick: () => { salvarJogo(); mostrarTela("screen-title"); initTitulo(); } }
-      ]
-    );
+    SFX.menu();
+    abrirModal("Sair para o título?", "O progresso é mantido (já salvo automaticamente).", [
+      { label: "CANCELAR", testid: "modal-quit-cancel" },
+      { label: "SAIR", danger: true, testid: "modal-quit-confirm",
+        onClick: () => { salvarJogo(); mostrarTela("screen-title"); initTitulo(); } }
+    ]);
   };
+
+  // Botão de som no canto
+  const somBtn = document.getElementById("btn-sound");
+  if (somBtn) {
+    const atualizar = () => somBtn.textContent = state.somAtivo ? "♪ SOM ON" : "♪ SOM OFF";
+    atualizar();
+    somBtn.onclick = () => {
+      state.somAtivo = !state.somAtivo;
+      atualizar(); salvarJogo();
+      if (state.somAtivo) SFX.menu();
+    };
+  }
+
+  // Inicializa contexto de áudio na primeira interação
+  document.addEventListener("click", () => SFX.init(), { once: true });
 
   mostrarTela("screen-title");
 });

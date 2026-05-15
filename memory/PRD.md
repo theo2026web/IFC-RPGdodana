@@ -1,41 +1,37 @@
-# IFC Sombrio: Batalha dos Alunos — PRD
+# IFC Sombrio: Batalha dos Alunos — PRD v2.0
 
-## Original Problem
-RPG de combate em turnos em HTML5/CSS3/Vanilla JS chamado "IFC Sombrio: Batalha dos Alunos", arquitetura modular com arrays separados (Personagens, Ataques, Itens, Locais). Sistema de elementos por estereótipos escolares com multiplicadores. Mapa do campus. Inimigos ocultos durante seleção (silhuetas). Combate por turnos, recrutamento de derrotados, XP/level up.
-
-## User Choices
-- Estrutura: arquivos separados (index.html, style.css, game.js)
-- Sprites: imagens externas + fallback canvas pixel-art
-- 1 personagem por estereótipo (10 total)
-- Starters: Dana (Músico), Mello (Valentão), Puskás (Nerd)
-- localStorage para salvar progresso
-
-## Architecture
-- Standalone web game em `/app/frontend/public/game/`
-- React App redireciona para `/game/index.html`
-- Sem backend; persistência em localStorage
-
-## Implemented (2026-02)
-- [x] Telas: Título, Seleção, Mapa, Locação, Batalha, Modal
-- [x] Sistema de estereótipos com VANTAGENS/DESVANTAGENS (10 tipos)
-- [x] 21 ataques personalizados (Combo Breaker, Rage Quit, Textão, Elogio Sincero, etc.)
-- [x] 4 itens (Merenda, Cafezinho, Energético, Amuleto)
-- [x] 5 locais (Cantina, Quadra, Lab, Pátio, Ponto de Ônibus)
-- [x] 10 personagens (3 starters + 7 NPCs)
-- [x] Silhuetas com "?" durante seleção
-- [x] Sprites revelados na batalha
-- [x] Combate em turnos: Atacar, Item, Trocar, Fugir
-- [x] Barras HP e Foco animadas
-- [x] Cálculo de dano com multiplicadores (1.5x forte, 0.5x fraco, +crit 1.5x)
-- [x] XP, level up, desbloqueio de ataques
-- [x] Recrutamento (40% chance, party até 6)
-- [x] Pixel-art sprite generator via canvas (fallback)
-- [x] localStorage save/load
-- [x] CSS retrô preservado (regra estrita)
+## Implementado v2 (2026-02)
+- [x] CONDICOES: 11 status (Cansado, Exausto, Atordoado, Sangrando, Em Chamas, Concentrado, Inspirado, Protegido, Confuso, Drogado, Regenerando)
+- [x] Sistema de precisão por ataque (físicos 88-95%, especiais 80-92%, cura/buff 100%)
+- [x] Sistema de crítico com modificadores (Concentrado +20%, ataques específicos com crit alto)
+- [x] AÇÕES tipadas: ataque, buff, debuff, cura, misto
+- [x] Targeting: inimigo_unico, todos_inimigos, aliado_unico, todos_aliados, self
+- [x] AoE: Solo de Guitarra, Textão, Rage Quit, Prova Surpresa, etc.
+- [x] Especialização por classe:
+  - Nerd: dano único + debuff cansaço
+  - Atleta: físico forte + multi
+  - Valentão: dano único alto + crit buff
+  - Músico: buff/debuff multi + cura coletiva
+  - Entroza: debuff confuso/drogado multi
+  - Professor: AoE + cansaço garantido
+  - Woke: AoE + buff aliados
+  - Estranho: confusão/drogado
+  - Gamer: combo single + rage AoE + concentração
+  - Gente Fina: cura única/multi + escudo defesa
+- [x] Batalha até 3v3 simultâneo
+- [x] Party em campo + reservas
+- [x] UI de seleção de alvo
+- [x] Som: Web Audio API (gerado) + override por arquivos em assets/sfx/
+- [x] Botão SOM ON/OFF salvo no save
+- [x] Save v2 (chave nova: ifc_sombrio_save_v2)
+- [x] Confuso pode redirecionar ataque para aliado
+- [x] Antídoto: novo item que limpa condições negativas
+- [x] CSS antigo preservado (style.css); adições em style-v2.css
 
 ## Backlog
-- P1: Música/SFX 8-bit
-- P1: Adicionar mais alunos por estereótipo
-- P2: Boss fight
-- P2: Sistema de equipamentos
-- P2: Animações de ataque mais elaboradas
+- P1: Adicionar imagens reais (assets/*.png) — sistema já carrega automaticamente
+- P1: Adicionar arquivos de SFX (assets/sfx/*.mp3) para override
+- P2: Boss fight com mecânicas únicas
+- P2: Sistema de equipamentos/acessórios
+- P2: Mais alunos por estereótipo
+- P2: Animações de ataque (efeitos visuais)
