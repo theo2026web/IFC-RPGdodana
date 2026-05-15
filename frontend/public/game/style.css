@@ -1,0 +1,670 @@
+/* =========================================================
+   IFC Sombrio — Pixel Art Retro Style
+   ATENÇÃO: NÃO ALTERAR este CSS ao atualizar lógicas do JS.
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  image-rendering: pixelated;
+}
+
+:root {
+  --bg-deep: #0a0612;
+  --bg-mid:  #1a0f2e;
+  --bg-soft: #2a1a4a;
+  --ink:     #f4e9d8;
+  --ink-dim: #a89878;
+  --accent:  #ff4d6d;
+  --accent-2:#7af0ff;
+  --ok:      #6effb0;
+  --warn:    #ffcc4d;
+  --danger:  #ff3860;
+  --border:  #f4e9d8;
+  --shadow:  #000;
+}
+
+html, body {
+  height: 100%;
+  width: 100%;
+  background: var(--bg-deep);
+  color: var(--ink);
+  font-family: 'VT323', monospace;
+  font-size: 20px;
+  overflow: hidden;
+  letter-spacing: 0.5px;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(
+      0deg,
+      rgba(0,0,0,0.18) 0px,
+      rgba(0,0,0,0.18) 1px,
+      transparent 2px,
+      transparent 4px
+    );
+  z-index: 9999;
+  mix-blend-mode: multiply;
+}
+
+#game-container {
+  width: 100%;
+  height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(255,77,109,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse at 50% 100%, rgba(122,240,255,0.06) 0%, transparent 60%),
+    var(--bg-deep);
+  border-left: 4px solid var(--bg-mid);
+  border-right: 4px solid var(--bg-mid);
+}
+
+/* ---------- SCREENS ---------- */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  padding: 28px;
+  overflow-y: auto;
+  animation: fadeIn 0.25s steps(4) both;
+}
+
+.screen.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.screen-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 22px;
+  color: var(--accent);
+  margin-bottom: 8px;
+  text-shadow: 3px 3px 0 var(--shadow);
+}
+
+.screen-sub {
+  font-size: 22px;
+  color: var(--ink-dim);
+  margin-bottom: 18px;
+}
+
+/* ---------- TITLE SCREEN ---------- */
+#screen-title {
+  align-items: center;
+  justify-content: center;
+}
+
+.title-frame {
+  text-align: center;
+  padding: 40px;
+  border: 4px solid var(--border);
+  background: var(--bg-mid);
+  box-shadow: 8px 8px 0 var(--shadow);
+  max-width: 560px;
+  width: 90%;
+}
+
+.title-main {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 38px;
+  color: var(--accent);
+  text-shadow: 4px 4px 0 var(--shadow), 8px 8px 0 var(--accent-2);
+  margin-bottom: 18px;
+  line-height: 1.2;
+}
+
+.title-sub {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 26px;
+}
+
+.title-flavor {
+  font-size: 22px;
+  font-style: italic;
+  color: var(--ink-dim);
+  margin-bottom: 28px;
+}
+
+.title-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.title-version {
+  font-size: 16px;
+  color: var(--ink-dim);
+  margin-top: 10px;
+}
+
+/* ---------- PIXEL BUTTON ---------- */
+.pixel-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  padding: 14px 22px;
+  background: var(--bg-soft);
+  color: var(--ink);
+  border: 3px solid var(--border);
+  cursor: pointer;
+  box-shadow: 4px 4px 0 var(--shadow);
+  transition: transform 0.08s steps(2), background 0.1s steps(2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.pixel-btn:hover {
+  background: var(--accent);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--shadow);
+}
+
+.pixel-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--shadow);
+}
+
+.pixel-btn.small {
+  font-size: 11px;
+  padding: 10px 14px;
+}
+
+.pixel-btn.danger:hover {
+  background: var(--danger);
+}
+
+/* ---------- STARTER GRID ---------- */
+.starter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 22px;
+  margin-top: 12px;
+}
+
+.starter-card {
+  border: 4px solid var(--border);
+  background: var(--bg-mid);
+  padding: 18px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 6px 6px 0 var(--shadow);
+  transition: transform 0.1s steps(2);
+}
+
+.starter-card:hover {
+  transform: translate(-3px, -3px);
+  background: var(--bg-soft);
+}
+
+.starter-card .sprite-box {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 12px;
+}
+
+.starter-card h3 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--accent-2);
+  margin-bottom: 6px;
+}
+
+.starter-card .stereo-tag {
+  font-size: 18px;
+  color: var(--warn);
+  margin-bottom: 8px;
+}
+
+.starter-card .stats {
+  font-size: 18px;
+  color: var(--ink-dim);
+  line-height: 1.4;
+}
+
+/* ---------- MAP ---------- */
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.player-status {
+  font-size: 18px;
+  color: var(--ink);
+  background: var(--bg-mid);
+  padding: 10px 14px;
+  border: 3px solid var(--border);
+  min-width: 220px;
+}
+
+.player-status .ps-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.map-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
+  flex: 1;
+}
+
+.location-card {
+  border: 4px solid var(--border);
+  background: var(--bg-mid);
+  padding: 16px;
+  cursor: pointer;
+  box-shadow: 6px 6px 0 var(--shadow);
+  transition: transform 0.1s steps(2);
+  display: flex;
+  flex-direction: column;
+  min-height: 180px;
+}
+
+.location-card:hover {
+  transform: translate(-3px, -3px);
+  background: var(--bg-soft);
+}
+
+.location-card .loc-icon {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 36px;
+  color: var(--accent-2);
+  margin-bottom: 10px;
+  text-align: center;
+  text-shadow: 3px 3px 0 var(--shadow);
+}
+
+.location-card h3 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  margin-bottom: 8px;
+}
+
+.location-card p {
+  font-size: 18px;
+  color: var(--ink-dim);
+  flex: 1;
+}
+
+.location-card .loc-foes {
+  font-size: 16px;
+  color: var(--warn);
+  margin-top: 8px;
+}
+
+.map-footer {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ---------- SILHOUETTE / SEARCH ---------- */
+.silhouette-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 18px;
+  margin-bottom: 18px;
+  flex: 1;
+}
+
+.silhouette-card {
+  border: 4px solid var(--border);
+  background: var(--bg-mid);
+  padding: 14px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 6px 6px 0 var(--shadow);
+  transition: transform 0.1s steps(2);
+}
+
+.silhouette-card:hover {
+  transform: translate(-3px, -3px);
+  background: var(--bg-soft);
+}
+
+.silhouette-box {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 10px;
+  background: #000;
+  border: 3px solid var(--border);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.silhouette-box::before {
+  content: "?";
+  font-family: 'Press Start 2P', monospace;
+  font-size: 48px;
+  color: var(--accent);
+  text-shadow: 0 0 8px var(--accent);
+  animation: flicker 1.4s steps(6) infinite;
+}
+
+@keyframes flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.silhouette-card .sil-label {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--ink-dim);
+}
+
+/* ---------- SPRITE BOXES ---------- */
+.sprite-box {
+  width: 128px;
+  height: 128px;
+  background: var(--bg-soft);
+  border: 4px solid var(--border);
+  box-shadow: 4px 4px 0 var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--ink);
+  text-align: center;
+  padding: 6px;
+  position: relative;
+  overflow: hidden;
+}
+
+.sprite-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.sprite-box.shake {
+  animation: shake 0.4s steps(8);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6px, 2px); }
+  40% { transform: translate(6px, -2px); }
+  60% { transform: translate(-4px, 4px); }
+  80% { transform: translate(4px, -4px); }
+}
+
+/* ---------- BATTLE ---------- */
+#screen-battle {
+  padding: 0;
+}
+
+.battle-scene {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 50%, rgba(0,0,0,0.6) 100%),
+    repeating-linear-gradient(45deg, var(--bg-mid) 0 12px, var(--bg-soft) 12px 24px);
+  min-height: 55%;
+  position: relative;
+}
+
+.battle-scene[data-bg="cantina"]    { background-color: #3a2a1a; }
+.battle-scene[data-bg="quadra"]     { background-color: #1a3a2a; }
+.battle-scene[data-bg="lab"]        { background-color: #0a1a3a; }
+.battle-scene[data-bg="patio"]      { background-color: #2a2a1a; }
+.battle-scene[data-bg="ponto"]      { background-color: #1a1a2a; }
+
+.enemy-area, .player-area {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+}
+
+.enemy-area {
+  justify-content: flex-end;
+}
+
+.player-area {
+  justify-content: flex-start;
+}
+
+.enemy-info, .player-info {
+  background: var(--bg-deep);
+  border: 3px solid var(--border);
+  padding: 10px 14px;
+  min-width: 220px;
+  box-shadow: 4px 4px 0 var(--shadow);
+}
+
+.char-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 14px;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.char-stereo {
+  font-size: 16px;
+  color: var(--warn);
+  margin-bottom: 8px;
+}
+
+.bar-wrap {
+  margin-bottom: 6px;
+}
+
+.bar {
+  width: 100%;
+  height: 16px;
+  background: var(--bg-deep);
+  border: 2px solid var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 100%;
+  transition: width 0.3s steps(8);
+}
+
+.bar.hp .bar-fill { background: var(--ok); }
+.bar.mp .bar-fill { background: var(--accent-2); }
+
+.bar-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--shadow);
+  font-family: 'Press Start 2P', monospace;
+  text-shadow: 1px 1px 0 var(--ink);
+}
+
+/* Battle UI bottom */
+.battle-ui {
+  background: var(--bg-deep);
+  border-top: 4px solid var(--border);
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 14px;
+  min-height: 180px;
+}
+
+.battle-log {
+  background: var(--bg-mid);
+  border: 3px solid var(--border);
+  padding: 12px;
+  font-size: 20px;
+  color: var(--ink);
+  overflow-y: auto;
+  max-height: 160px;
+  line-height: 1.4;
+}
+
+.battle-log .log-line {
+  margin-bottom: 4px;
+  border-bottom: 1px dashed var(--bg-soft);
+  padding-bottom: 2px;
+}
+
+.battle-log .log-line.crit { color: var(--accent); }
+.battle-log .log-line.weak { color: var(--ink-dim); }
+.battle-log .log-line.strong { color: var(--warn); }
+.battle-log .log-line.system { color: var(--accent-2); }
+
+.battle-menu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  align-content: start;
+}
+
+.menu-btn {
+  font-size: 11px;
+  padding: 12px 8px;
+}
+
+.battle-submenu {
+  grid-column: 1 / -1;
+  background: var(--bg-mid);
+  border: 3px solid var(--border);
+  padding: 12px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 8px;
+}
+
+.submenu-item {
+  background: var(--bg-soft);
+  border: 2px solid var(--border);
+  padding: 10px;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: left;
+  color: var(--ink);
+  transition: background 0.1s steps(2);
+}
+
+.submenu-item:hover {
+  background: var(--accent);
+}
+
+.submenu-item .sub-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 11px;
+  color: var(--accent-2);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.submenu-item:hover .sub-title {
+  color: var(--ink);
+}
+
+.submenu-item .sub-desc {
+  font-size: 15px;
+  color: var(--ink-dim);
+}
+
+.submenu-item:hover .sub-desc {
+  color: var(--ink);
+}
+
+.submenu-item.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---------- MODAL ---------- */
+.modal {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  animation: fadeIn 0.2s steps(4);
+}
+
+.modal-frame {
+  background: var(--bg-mid);
+  border: 4px solid var(--border);
+  padding: 24px;
+  max-width: 480px;
+  width: 90%;
+  box-shadow: 8px 8px 0 var(--shadow);
+  text-align: center;
+}
+
+.modal-frame h3 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 16px;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.modal-frame p {
+  font-size: 20px;
+  color: var(--ink);
+  margin-bottom: 18px;
+  line-height: 1.4;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ---------- CANVAS SPRITE GEN ---------- */
+canvas.pixel-sprite {
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 720px) {
+  body { font-size: 18px; }
+  .title-main { font-size: 26px; }
+  .title-sub { font-size: 14px; }
+  .screen-title { font-size: 16px; }
+  .battle-ui { grid-template-columns: 1fr; }
+  .sprite-box { width: 96px; height: 96px; }
+  .enemy-info, .player-info { min-width: 160px; }
+}
