@@ -12,28 +12,42 @@
    ========================================================= */
 const VANTAGENS = {
   "Nerd":       "Valentão",
-  "Valentão":   "Entroza",
-  "Atleta":     "Nerd",
-  "Músico":     "Atleta",
+  "Valentão":   "Atleta",
+  "Atleta":     "Gamer",
+  "Gamer":      "Músico",
+  "Músico":     "Entroza",
   "Entroza":    "Professor",
-  "Professor":  "Valentão",
-  "Woke":       "Valentão",
-  "Estranho":   "Woke",
-  "Gamer":      "Nerd",
-  "Gente Fina": "Estranho"
+  "Professor":  "Woke",
+  "Woke":       "Estranho",
+  "Estranho":   "Gente Fina",
+  "Gente Fina": "Nerd"
 };
 
 const DESVANTAGENS = {
-  "Nerd":       "Atleta",
-  "Valentão":   "Professor",
-  "Atleta":     "Gamer",
-  "Músico":     "Nerd",
-  "Entroza":    "Valentão",
-  "Professor":  "Gente Fina",
-  "Woke":       "Estranho",
-  "Estranho":   "Gente Fina",
+  "Nerd":       "Gente Fina",
+  "Valentão":   "Nerd",
+  "Atleta":     "Valentão",
   "Gamer":      "Atleta",
-  "Gente Fina": "Entroza"
+  "Músico":     "Gamer",
+  "Entroza":    "Músico",
+  "Professor":  "Entroza",
+  "Woke":       "Professor",
+  "Estranho":   "Woke",
+  "Gente Fina": "Estranho"
+};
+
+// Cores e ícones por classe (para badges visuais)
+const ESTILO_CLASSE = {
+  "Nerd":       { cor: "#7af0ff", icone: "📖" },
+  "Valentão":   { cor: "#d62828", icone: "👊" },
+  "Atleta":     { cor: "#52b788", icone: "🏃" },
+  "Gamer":      { cor: "#00b4d8", icone: "🎮" },
+  "Músico":     { cor: "#c77dff", icone: "🎸" },
+  "Entroza":    { cor: "#ffcc4d", icone: "🌀" },
+  "Professor":  { cor: "#ff8c42", icone: "📋" },
+  "Woke":       { cor: "#9d4edd", icone: "📢" },
+  "Estranho":   { cor: "#5a189a", icone: "👁" },
+  "Gente Fina": { cor: "#90e0ef", icone: "💖" }
 };
 
 
@@ -1114,6 +1128,12 @@ function sombrear(hex, amt) {
 function montarSprite(targetEl, personagem) {
   targetEl.innerHTML = "";
   if (personagem.sprite) {
+    // Loading placeholder discreto (sem flash do canvas)
+    const placeholder = document.createElement("div");
+    placeholder.className = "sprite-loading";
+    placeholder.textContent = "...";
+    targetEl.appendChild(placeholder);
+
     const img = new Image();
     img.onload  = () => { targetEl.innerHTML = ""; targetEl.appendChild(img); };
     img.onerror = () => {
@@ -1122,11 +1142,6 @@ function montarSprite(targetEl, personagem) {
     };
     img.src = personagem.sprite;
     img.alt = personagem.nome;
-    setTimeout(() => {
-      if (!targetEl.querySelector("img") && !targetEl.querySelector("canvas")) {
-        targetEl.appendChild(gerarSpritePixel(personagem, targetEl.clientWidth));
-      }
-    }, 80);
   } else {
     targetEl.appendChild(gerarSpritePixel(personagem, targetEl.clientWidth));
   }
@@ -1307,24 +1322,24 @@ function irParaLocacao(loc) {
   const grid = document.getElementById("silhouette-grid");
   grid.innerHTML = "";
 
-  // Sortear de 1 a 3 grupos (cada grupo = batalha)
-  const candidatos = loc.inimigosPossiveis.map(id => getPersonagem(id)).filter(p => p);
-  const numGrupos = Math.min(3, candidatos.length);
+  // Exclui inimigos recém-derrotados (últimos 3 ids)
+  const recentes = state.derrotados.slice(-3);
+  let candidatos = loc.inimigosPossiveis
+    .map(id => getPersonagem(id))
+    .filter(p => p && !recentes.includes(p.id));
+  if (candidatos.length === 0) {
+    candidatos = loc.inimigosPossiveis.map(id => getPersonagem(id)).filter(p => p);
+  }
 
+  const numGrupos = Math.min(3, candidatos.length);
   for (let g = 0; g < numGrupos; g++) {
-    // Cada grupo tem 1 a 3 inimigos
     const tamanhoGrupo = rand(1, Math.min(3, state.party.length + 1));
     const embaralhados = [...candidatos].sort(() => Math.random() - 0.5);
     const grupo = embaralhados.slice(0, tamanhoGrupo);
-
     const card = document.createElement("div");
     card.className = "silhouette-card";
     card.setAttribute("data-testid", `silhouette-${g}`);
-
-    const silsHtml = grupo.map(() =>
-      `<div class="silhouette-box small-sil"></div>`
-    ).join("");
-
+    const silsHtml = grupo.map(() => `<div class="silhouette-box small-sil"></div>`).join("");
     card.innerHTML = `
       <div class="silhouette-row">${silsHtml}</div>
       <div class="sil-label">${tamanhoGrupo === 1 ? "1 oponente" : `${tamanhoGrupo} oponentes`}</div>
@@ -1412,6 +1427,10 @@ function criarCardCombatente(c, idx, lado) {
     return `<span class="cond-badge" style="background:${def.cor}" title="${def.nome} (${cd.turnos})">${def.icone}</span>`;
   }).join("");
 
+  const estilo = ESTILO_CLASSE[c.estereotipo] || { cor: "#888", icone: "?" };
+  const forte = VANTAGENS[c.estereotipo];
+  const fraco = DESVANTAGENS[c.estereotipo];
+
   const hasFoco = lado === "player";
   const barsHtml = `
     <div class="bar hp"><div class="bar-fill" style="width:${(c.hp/c.hpMax)*100}%"></div><span class="bar-label">${c.hp}/${c.hpMax}</span></div>
@@ -1419,11 +1438,16 @@ function criarCardCombatente(c, idx, lado) {
   `;
 
   wrap.innerHTML = `
+    <div class="class-badge" style="background:${estilo.cor}" title="${c.estereotipo}">${estilo.icone}</div>
     <div class="sprite-box battle-sprite"></div>
     <div class="combatant-info">
       <div class="char-name">${c.nome} Nv${c.nivel}</div>
-      <div class="char-stereo">${c.estereotipo}</div>
+      <div class="char-stereo" style="color:${estilo.cor}">${c.estereotipo}</div>
       ${barsHtml}
+      <div class="matchup-row">
+        <span class="mu-strong" title="Forte contra">▲ ${forte}</span>
+        <span class="mu-weak" title="Fraco contra">▼ ${fraco}</span>
+      </div>
       <div class="cond-row">${condBadges}</div>
     </div>
   `;

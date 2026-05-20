@@ -1,0 +1,208 @@
+/* =========================================================
+   IFC SOMBRIO — Tema v3
+   Paleta: Verde campus + Vermelho sangue, fundo sombrio
+   Fixes: HUD overlap, status badges, polish geral
+   ========================================================= */
+
+:root {
+  --bg-deep:  #060c0a;
+  --bg-mid:   #0d1f17;
+  --bg-soft:  #14332a;
+  --ink:      #e8f3da;
+  --ink-dim:  #7a9583;
+  --accent:   #d62828;   /* vermelho sangue */
+  --accent-2: #52b788;   /* verde campus */
+  --ok:       #74c69d;
+  --warn:     #f4a261;
+  --danger:   #e63946;
+  --border:   #95d5b2;
+  --shadow:   #000;
+}
+
+/* Glow vermelho/verde no container principal */
+#game-container {
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(214, 40, 40, 0.12) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(82, 183, 136, 0.10) 0%, transparent 55%),
+    var(--bg-deep) !important;
+  border-left-color: var(--bg-mid) !important;
+  border-right-color: var(--bg-mid) !important;
+}
+
+/* Título com brilho verde+vermelho */
+.title-main {
+  text-shadow: 4px 4px 0 var(--shadow), 8px 8px 0 var(--accent-2) !important;
+}
+
+/* Botão pixel hover verde */
+.pixel-btn:hover {
+  background: var(--accent-2) !important;
+  color: var(--bg-deep) !important;
+}
+.pixel-btn.danger:hover {
+  background: var(--accent) !important;
+  color: var(--ink) !important;
+}
+
+/* HUD player-status — fix overflow e z-index */
+.player-status {
+  position: relative;
+  z-index: 5;
+  max-width: 280px;
+  font-size: 16px !important;
+  padding: 8px 12px !important;
+  border-color: var(--accent-2) !important;
+  background: rgba(20, 51, 42, 0.95) !important;
+}
+
+.player-status .ps-line {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 14px;
+}
+
+.map-header {
+  align-items: center !important;
+  gap: 20px !important;
+}
+
+/* Botões do rodapé do mapa não devem sobrepor cards */
+.map-footer {
+  position: relative;
+  z-index: 4;
+  background: rgba(13, 31, 23, 0.9);
+  padding: 10px;
+  margin-top: 14px !important;
+  border-top: 2px solid var(--bg-soft);
+}
+
+/* Location cards com tema verde */
+.location-card {
+  border-color: var(--accent-2) !important;
+}
+.location-card:hover {
+  background: var(--bg-soft) !important;
+  border-color: var(--accent) !important;
+}
+.location-card .loc-icon {
+  color: var(--accent-2) !important;
+}
+.location-card h3 {
+  color: var(--accent) !important;
+}
+
+/* Starter cards */
+.starter-card { border-color: var(--accent-2) !important; }
+.starter-card:hover { border-color: var(--accent) !important; }
+.starter-card h3 { color: var(--accent-2) !important; }
+.starter-card .stereo-tag { color: var(--warn) !important; }
+
+/* Silhouette cards */
+.silhouette-card { border-color: var(--accent-2) !important; }
+.silhouette-box::before {
+  color: var(--accent) !important;
+  text-shadow: 0 0 8px var(--accent), 0 0 14px var(--accent) !important;
+}
+
+/* BATTLE — combatant cards */
+.combatant {
+  z-index: 2;
+}
+.combatant.is-enemy { border-color: var(--accent) !important; }
+.combatant.is-player { border-color: var(--accent-2) !important; }
+.combatant.active-turn {
+  box-shadow: 4px 10px 0 var(--accent-2) !important;
+  background: rgba(82, 183, 136, 0.15) !important;
+}
+
+/* Sprite imagens grandes não devem estourar */
+.sprite-box img {
+  object-fit: cover !important;
+  object-position: top center;
+}
+
+/* Battle scene novo background verde IFC */
+.battle-scene {
+  background:
+    linear-gradient(180deg, rgba(6, 12, 10, 0.6) 0%, transparent 50%, rgba(6, 12, 10, 0.8) 100%),
+    repeating-linear-gradient(45deg, var(--bg-mid) 0 12px, var(--bg-soft) 12px 24px) !important;
+}
+
+.battle-scene[data-bg="cantina"]    { background-color: #4a2e1a !important; }
+.battle-scene[data-bg="quadra"]     { background-color: #1a4a2e !important; }
+.battle-scene[data-bg="lab"]        { background-color: #0a2a3a !important; }
+.battle-scene[data-bg="patio"]      { background-color: #2a3a1a !important; }
+.battle-scene[data-bg="ponto"]      { background-color: #1a1a2e !important; }
+
+/* Battle UI bottom — sem sobreposição */
+.battle-ui {
+  position: relative;
+  z-index: 10;
+  background: var(--bg-deep) !important;
+  border-top-color: var(--accent-2) !important;
+}
+
+.battle-log {
+  border-color: var(--accent-2) !important;
+}
+
+.battle-log .log-line.crit { color: var(--accent) !important; }
+.battle-log .log-line.strong { color: var(--warn) !important; }
+.battle-log .log-line.system { color: var(--accent-2) !important; }
+
+/* Bars HP verde, MP vermelho-ish para contraste */
+.bar.hp .bar-fill { background: var(--ok) !important; }
+.bar.mp .bar-fill { background: #f4a261 !important; }
+.bar { border-color: var(--ink) !important; }
+
+/* Submenu */
+.submenu-item .sub-title { color: var(--accent-2) !important; }
+.submenu-item:hover { background: var(--accent) !important; }
+.submenu-item:hover .sub-title,
+.submenu-item:hover .sub-desc { color: var(--ink) !important; }
+
+.submenu-item .tag {
+  color: var(--accent-2) !important;
+  border-color: var(--accent-2) !important;
+}
+
+/* Target selector vermelho de aviso */
+.battle-target {
+  border-color: var(--accent) !important;
+}
+.target-header { color: var(--accent) !important; }
+.target-card:hover { background: var(--accent) !important; }
+
+/* Modal */
+.modal-frame {
+  border-color: var(--accent-2) !important;
+}
+.modal-frame h3 { color: var(--accent) !important; }
+
+/* Cond badges com borda dark */
+.cond-badge {
+  border-color: var(--bg-deep) !important;
+  box-shadow: 1px 1px 0 var(--shadow);
+}
+
+/* Screen title bem verde IFC */
+.screen-title {
+  color: var(--accent-2) !important;
+  text-shadow: 3px 3px 0 var(--shadow), 6px 6px 0 var(--accent) !important;
+}
+
+/* Title flavor */
+.title-flavor { color: var(--ink-dim) !important; }
+.title-sub { color: var(--accent-2) !important; }
+
+/* Selo IFC topo do título */
+.title-frame::before {
+  content: "★ IFC ★";
+  display: block;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 12px;
+  color: var(--accent-2);
+  margin-bottom: 12px;
+  letter-spacing: 4px;
+}
