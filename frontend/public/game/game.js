@@ -684,6 +684,153 @@ const ATAQUES = [
     chanceCrit: 30,
     efeitos: [{condicao: "sangrando", chance: 70, turnos: 3, target: "alvo"}]
   },
+
+  /* ---------- HABILIDADES DOS NOVOS ALUNOS ---------- */
+  {
+    id: "argumento_irrefutavel",
+    nome: "Argumento Irrefutável",
+    poder: 10,
+    custoFoco: 10,
+    descricao: "Argumenta tão bem que confunde todos os inimigos.",
+    estereotipoDono: "Nerd",
+    nivelMinimo: 1,
+    tipoAcao: "debuff",
+    alvo: "todos_inimigos",
+    precisao: 90,
+    chanceCrit: 0,
+    efeitos: [{condicao: "confuso", chance: 55, turnos: 2, target: "alvo"}]
+  },
+  {
+    id: "empurrao_surdo",
+    nome: "Empurrão Surdo",
+    poder: 20,
+    custoFoco: 6,
+    descricao: "Empurrão violento que pode atordoar.",
+    estereotipoDono: "Valentão",
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 92,
+    chanceCrit: 14,
+    efeitos: [{condicao: "atordoado", chance: 40, turnos: 1, target: "alvo"}]
+  },
+  {
+    id: "spike_aereo",
+    nome: "Spike Aéreo",
+    poder: 26,
+    custoFoco: 12,
+    descricao: "Pula e cravadinha em um alvo. Dano cirúrgico.",
+    estereotipoDono: "Atleta",
+    nivelMinimo: 1,
+    tipoAcao: "ataque",
+    alvo: "inimigo_unico",
+    precisao: 88,
+    chanceCrit: 20,
+    efeitos: []
+  },
+  {
+    id: "gg_ez",
+    nome: "GG EZ",
+    poder: 0,
+    custoFoco: 8,
+    descricao: "Provoca o alvo (cansado) e se autoinspira.",
+    estereotipoDono: "Gamer",
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 90,
+    chanceCrit: 0,
+    efeitos: [
+      {condicao: "cansado", chance: 60, turnos: 3, target: "alvo"},
+      {condicao: "inspirado", chance: 100, turnos: 2, target: "usuario"}
+    ]
+  },
+  {
+    id: "loop_hipnotico",
+    nome: "Loop Hipnótico",
+    poder: 8,
+    custoFoco: 12,
+    descricao: "Loop que esgota todos os inimigos.",
+    estereotipoDono: "Músico",
+    nivelMinimo: 1,
+    tipoAcao: "debuff",
+    alvo: "todos_inimigos",
+    precisao: 88,
+    chanceCrit: 0,
+    efeitos: [{condicao: "exausto", chance: 55, turnos: 3, target: "alvo"}]
+  },
+  {
+    id: "olhar_distante",
+    nome: "Olhar Distante",
+    poder: 6,
+    custoFoco: 8,
+    descricao: "Olha pra um ponto fixo. Confunde inimigos.",
+    estereotipoDono: "Entroza",
+    nivelMinimo: 1,
+    tipoAcao: "debuff",
+    alvo: "todos_inimigos",
+    precisao: 90,
+    chanceCrit: 0,
+    efeitos: [{condicao: "confuso", chance: 50, turnos: 2, target: "alvo"}]
+  },
+  {
+    id: "caderneta",
+    nome: "Caderneta",
+    poder: 18,
+    custoFoco: 8,
+    descricao: "Anota a falta. Marca emocional + sangramento.",
+    estereotipoDono: "Professor",
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 92,
+    chanceCrit: 10,
+    efeitos: [{condicao: "sangrando", chance: 55, turnos: 3, target: "alvo"}]
+  },
+  {
+    id: "indireta_pesada",
+    nome: "Indireta Pesada",
+    poder: 16,
+    custoFoco: 6,
+    descricao: "Story com indireta. Drogado de tanto pensar.",
+    estereotipoDono: "Woke",
+    nivelMinimo: 1,
+    tipoAcao: "misto",
+    alvo: "inimigo_unico",
+    precisao: 88,
+    chanceCrit: 12,
+    efeitos: [{condicao: "drogado", chance: 60, turnos: 3, target: "alvo"}]
+  },
+  {
+    id: "habito_esquisito",
+    nome: "Hábito Esquisito",
+    poder: 0,
+    custoFoco: 10,
+    descricao: "Faz algo bizarro. Todos ficam drogados.",
+    estereotipoDono: "Estranho",
+    nivelMinimo: 1,
+    tipoAcao: "debuff",
+    alvo: "todos_inimigos",
+    precisao: 88,
+    chanceCrit: 0,
+    efeitos: [{condicao: "drogado", chance: 55, turnos: 3, target: "alvo"}]
+  },
+  {
+    id: "acolhimento",
+    nome: "Acolhimento",
+    poder: 0,
+    custoFoco: 10,
+    descricao: "Acolhe um aliado: cura 25 HP + protegido.",
+    estereotipoDono: "Gente Fina",
+    nivelMinimo: 1,
+    tipoAcao: "cura",
+    alvo: "aliado_unico",
+    precisao: 100,
+    chanceCrit: 0,
+    efeitos: [{condicao: "protegido", chance: 100, turnos: 3, target: "alvo"}],
+    cura: 25
+  },
+
   {
     id: "soco_basico_end",
     nome: "_end",
@@ -744,6 +891,54 @@ const ITENS = [
     alvo: "aliado_unico",
     valor: 0,
     descricao: "Remove todas as condições negativas de um aliado."
+  },
+  {
+    id: "salgado_veneno",
+    nome: "Salgado Vencido",
+    tipo: "dano_direto",
+    alvo: "inimigo_unico",
+    valor: 40,
+    descricao: "Joga um salgado vencido. 40 de dano fixo."
+  },
+  {
+    id: "suco_detox",
+    nome: "Suco Detox",
+    tipo: "cura_status_drogado",
+    alvo: "aliado_unico",
+    valor: 0,
+    descricao: "Remove 'Drogado' e cura 15 HP."
+  },
+  {
+    id: "capsula_foco",
+    nome: "Cápsula de Foco",
+    tipo: "cura_foco_alto",
+    alvo: "aliado_unico",
+    valor: 50,
+    descricao: "Restaura 50 Foco."
+  },
+  {
+    id: "sticker_maneiro",
+    nome: "Sticker Maneiro",
+    tipo: "buff_def",
+    alvo: "aliado_unico",
+    valor: 0,
+    descricao: "Aplica Protegido em um aliado por 3 turnos."
+  },
+  {
+    id: "bilhetinho",
+    nome: "Bilhetinho da Diretoria",
+    tipo: "dano_direto",
+    alvo: "inimigo_unico",
+    valor: 60,
+    descricao: "Convocação assustadora. 60 de dano fixo."
+  },
+  {
+    id: "biscoito_globo",
+    nome: "Biscoito Globo",
+    tipo: "cura_hp",
+    alvo: "todos_aliados",
+    valor: 20,
+    descricao: "Cura 20 HP de TODOS os aliados em campo."
   }
 ];
 
@@ -759,7 +954,7 @@ const LOCAIS = [
     icone: "P",
     descricao: "Onde tudo começa e tudo termina.",
     desbloqueioVitorias: 0,
-    inimigosPossiveis: ["rosa", "bia", "tony", "rafa", "leo"]
+    inimigosPossiveis: ["rosa", "bia", "tony", "rafa", "leo", "rai", "otto", "mari"]
   },
   {
     id: "cantina",
@@ -768,7 +963,7 @@ const LOCAIS = [
     icone: "C",
     descricao: "O cheiro de coxinha vencida paira no ar.",
     desbloqueioVitorias: 2,
-    inimigosPossiveis: ["mello", "rosa", "bia", "luna"]
+    inimigosPossiveis: ["mello", "rosa", "bia", "luna", "bruno", "fe", "mari"]
   },
   {
     id: "quadra",
@@ -777,7 +972,7 @@ const LOCAIS = [
     icone: "Q",
     descricao: "Marcações apagadas, redes rasgadas, ego inflado.",
     desbloqueioVitorias: 4,
-    inimigosPossiveis: ["dana", "tony", "mello"]
+    inimigosPossiveis: ["dana", "tony", "mello", "ana", "bruno", "kaio"]
   },
   {
     id: "lab",
@@ -786,7 +981,7 @@ const LOCAIS = [
     icone: "L",
     descricao: "Monitores antigos zumbem em uma frequência estranha.",
     desbloqueioVitorias: 6,
-    inimigosPossiveis: ["puskas", "kevin", "rafa", "leo"]
+    inimigosPossiveis: ["puskas", "kevin", "rafa", "leo", "davi", "kaio", "adriana"]
   },
   {
     id: "ponto",
@@ -795,7 +990,7 @@ const LOCAIS = [
     icone: "O",
     descricao: "Cheira a álcool em gel e tédio.",
     desbloqueioVitorias: 9,
-    inimigosPossiveis: ["kevin", "rafa", "puskas", "dana", "luna"]
+    inimigosPossiveis: ["kevin", "rafa", "puskas", "dana", "luna", "ze", "otto", "rai", "adriana"]
   }
 ];
 
@@ -937,6 +1132,171 @@ const PERSONAGENS = [
     defesaBase: 6,
     ataques: ["combo_breaker", "estrategia", "rage_quit"],
     descricao: "Joga ranqueada em vez de fazer trabalho.",
+    isStarter: false
+  },
+
+  {
+    id: "luna",
+    nome: "Luna",
+    estereotipo: "Gente Fina",
+    sprite: "assets/luna.png",
+    cor: "#90e0ef",
+    hpBase: 82,
+    focoBase: 60,
+    ataqueBase: 11,
+    defesaBase: 8,
+    ataques: ["elogio_sincero", "abraco_quentinho", "boa_energia", "escudo_de_bondade"],
+    descricao: "Sempre tem um chiclete pra te oferecer.",
+    isStarter: false
+  },
+
+  {
+    id: "davi",
+    nome: "Davi",
+    estereotipo: "Nerd",
+    sprite: "assets/davi.png",
+    cor: "#48cae4",
+    hpBase: 68,
+    focoBase: 72,
+    ataqueBase: 13,
+    defesaBase: 6,
+    ataques: ["argumento_irrefutavel", "calc_brutal"],
+    descricao: "Carrega 5 livros de cálculo na mochila.",
+    isStarter: false
+  },
+
+  {
+    id: "bruno",
+    nome: "Bruno",
+    estereotipo: "Valentão",
+    sprite: "assets/bruno.png",
+    cor: "#e63946",
+    hpBase: 100,
+    focoBase: 32,
+    ataqueBase: 15,
+    defesaBase: 10,
+    ataques: ["empurrao_surdo", "headbutt_idiota"],
+    descricao: "Bate primeiro, conversa depois.",
+    isStarter: false
+  },
+
+  {
+    id: "ana",
+    nome: "Ana",
+    estereotipo: "Atleta",
+    sprite: "assets/ana.png",
+    cor: "#52b788",
+    hpBase: 92,
+    focoBase: 42,
+    ataqueBase: 15,
+    defesaBase: 8,
+    ataques: ["spike_aereo", "carrinho_violento"],
+    descricao: "Capitã do time, joga limpo.",
+    isStarter: false
+  },
+
+  {
+    id: "kaio",
+    nome: "Kaio",
+    estereotipo: "Gamer",
+    sprite: "assets/kaio.png",
+    cor: "#0096c7",
+    hpBase: 74,
+    focoBase: 62,
+    ataqueBase: 14,
+    defesaBase: 6,
+    ataques: ["gg_ez", "combo_breaker"],
+    descricao: "Stream 8h por dia, não sabe sair do gás.",
+    isStarter: false
+  },
+
+  {
+    id: "fe",
+    nome: "Fê",
+    estereotipo: "Músico",
+    sprite: "assets/fe.png",
+    cor: "#a06cd5",
+    hpBase: 78,
+    focoBase: 66,
+    ataqueBase: 13,
+    defesaBase: 7,
+    ataques: ["loop_hipnotico", "solo_de_guitarra"],
+    descricao: "DJ underground, mistura tudo.",
+    isStarter: false
+  },
+
+  {
+    id: "ze",
+    nome: "Zé",
+    estereotipo: "Entroza",
+    sprite: "assets/ze.png",
+    cor: "#ffb703",
+    hpBase: 72,
+    focoBase: 60,
+    ataqueBase: 12,
+    defesaBase: 6,
+    ataques: ["olhar_distante", "viagem_existencial"],
+    descricao: "Não sabe que dia é hoje.",
+    isStarter: false
+  },
+
+  {
+    id: "adriana",
+    nome: "Profa. Adriana",
+    estereotipo: "Professor",
+    sprite: "assets/adriana.png",
+    cor: "#fb8500",
+    hpBase: 86,
+    focoBase: 62,
+    ataqueBase: 14,
+    defesaBase: 9,
+    ataques: ["caderneta", "advertencia"],
+    descricao: "Lê redação em voz alta na frente da turma.",
+    isStarter: false
+  },
+
+  {
+    id: "rai",
+    nome: "Rai",
+    estereotipo: "Woke",
+    sprite: "assets/rai.png",
+    cor: "#7b2cbf",
+    hpBase: 74,
+    focoBase: 62,
+    ataqueBase: 13,
+    defesaBase: 7,
+    ataques: ["indireta_pesada", "textao"],
+    descricao: "Faz textão a cada 2 horas.",
+    isStarter: false
+  },
+
+  {
+    id: "otto",
+    nome: "Otto",
+    estereotipo: "Estranho",
+    sprite: "assets/otto.png",
+    cor: "#6f2dbd",
+    hpBase: 80,
+    focoBase: 56,
+    ataqueBase: 13,
+    defesaBase: 7,
+    ataques: ["habito_esquisito", "olhar_perturbador"],
+    descricao: "Coleciona pedras achadas no chão.",
+    isStarter: false
+  },
+
+  {
+    id: "mari",
+    nome: "Mari",
+    estereotipo: "Gente Fina",
+    sprite: "assets/mari.png",
+    cor: "#ade8f4",
+    hpBase: 84,
+    focoBase: 58,
+    ataqueBase: 11,
+    defesaBase: 9,
+    ataques: ["acolhimento", "elogio_sincero"],
+    descricao: "Tem chá pra cada intervalo.",
     isStarter: false
   },
 
@@ -1300,7 +1660,7 @@ function irParaSelecaoStarter() {
 function escolherStarter(personagemBase) {
   state.party = [instanciarPersonagem(personagemBase, 1)];
   state.ativo = 0;
-  state.inventario = { merenda: 2, cafezinho: 1, antidoto: 1 };
+  state.inventario = { merenda: 3, cafezinho: 2, antidoto: 1, biscoito_globo: 1, suco_detox: 1 };
   state.derrotados = [];
   state.iniciado = true;
   salvarJogo();
@@ -1466,10 +1826,20 @@ function irParaLocacao(loc) {
   if (!state.batalhasPorLocal[loc.id]) {
     const candidatos = loc.inimigosPossiveis.map(id => getPersonagem(id)).filter(p => p);
     const grupos = [];
+    // Garante VARIEDADE: cada grupo sorteia personagens diferentes entre si
     for (let g = 0; g < 3; g++) {
       const tamanho = rand(1, Math.min(3, state.party.length + 1));
-      const embaralhados = [...candidatos].sort(() => Math.random() - 0.5);
-      grupos.push({ ids: embaralhados.slice(0, tamanho).map(p => p.id), vencido: false });
+      const pool = [...candidatos].sort(() => Math.random() - 0.5);
+      const escolhidos = [];
+      const usados = new Set();
+      for (const c of pool) {
+        if (escolhidos.length >= tamanho) break;
+        if (!usados.has(c.id)) {
+          escolhidos.push(c);
+          usados.add(c.id);
+        }
+      }
+      grupos.push({ ids: escolhidos.map(p => p.id), vencido: false });
     }
     state.batalhasPorLocal[loc.id] = grupos;
     salvarJogo();
@@ -1846,8 +2216,11 @@ function escolherAlvoParaItem(item) {
   const b = state.batalha;
   const ator = getAtorAtual();
   if (item.alvo === "self") { usarItem(ator, item, ator); return; }
-  const targets = b.partyEmCampo.filter(p => p.hp > 0);
-  abrirAlvoSelector(targets, (alvo) => usarItem(ator, item, alvo), true);
+  if (item.alvo === "todos_aliados") { usarItem(ator, item, ator); return; }
+  const targets = item.alvo === "inimigo_unico"
+    ? b.inimigos.filter(i => i.hp > 0)
+    : b.partyEmCampo.filter(p => p.hp > 0);
+  abrirAlvoSelector(targets, (alvo) => usarItem(ator, item, alvo), item.alvo !== "inimigo_unico");
 }
 
 function abrirAlvoSelector(targets, callback, isAlly) {
@@ -1999,11 +2372,21 @@ function executarAcao(ator, ataque, alvos) {
 function usarItem(ator, item, alvo) {
   log(`${ator.nome} usou ${item.nome} em ${alvo.nome}.`, "system");
   if (item.tipo === "cura_hp") {
-    const cura = Math.min(item.valor, alvo.hpMax - alvo.hp);
-    alvo.hp += cura;
-    log(`${alvo.nome} recupera ${cura} HP.`, "system");
+    if (item.alvo === "todos_aliados") {
+      const b = state.batalha;
+      const aliados = b ? b.partyEmCampo.filter(p => p.hp > 0) : state.party.filter(p => p.hp > 0);
+      aliados.forEach(a => {
+        const c = Math.min(item.valor, a.hpMax - a.hp);
+        a.hp += c;
+        log(`${a.nome} recupera ${c} HP.`, "system");
+      });
+    } else {
+      const cura = Math.min(item.valor, alvo.hpMax - alvo.hp);
+      alvo.hp += cura;
+      log(`${alvo.nome} recupera ${cura} HP.`, "system");
+    }
     SFX.heal();
-  } else if (item.tipo === "cura_foco") {
+  } else if (item.tipo === "cura_foco" || item.tipo === "cura_foco_alto") {
     const cura = Math.min(item.valor, alvo.focoMax - alvo.foco);
     alvo.foco += cura;
     log(`${alvo.nome} recupera ${cura} Foco.`, "system");
@@ -2021,11 +2404,30 @@ function usarItem(ator, item, alvo) {
     alvo.condicoes = alvo.condicoes.filter(c => !negativas.includes(c.id));
     log(`${alvo.nome}: condições negativas removidas.`, "system");
     SFX.buff();
+  } else if (item.tipo === "dano_direto") {
+    alvo.hp = Math.max(0, alvo.hp - item.valor);
+    log(`${alvo.nome} sofre ${item.valor} de dano direto!`, "weak");
+    SFX.hit();
+    if (alvo.hp <= 0) log(`${alvo.nome} foi nocauteado!`, "weak");
+  } else if (item.tipo === "cura_status_drogado") {
+    alvo.condicoes = alvo.condicoes.filter(c => c.id !== "drogado");
+    const cura = Math.min(15, alvo.hpMax - alvo.hp);
+    alvo.hp += cura;
+    log(`${alvo.nome}: Drogado removido + ${cura} HP.`, "system");
+    SFX.heal();
+  } else if (item.tipo === "buff_def") {
+    const existente = alvo.condicoes.find(c => c.id === "protegido");
+    if (existente) existente.turnos = 3;
+    else alvo.condicoes.push({ id: "protegido", turnos: 3 });
+    log(`${alvo.nome} agora está Protegido.`, "system");
+    SFX.buff();
   }
   state.inventario[item.id]--;
   if (state.inventario[item.id] <= 0) delete state.inventario[item.id];
-  renderBatalha();
-  avancarAtor();
+  if (state.batalha) {
+    renderBatalha();
+    avancarAtor();
+  }
 }
 
 function trocarPorReserva(reserva) {
@@ -2238,29 +2640,135 @@ function voltarAoMapa() {
    18) PARTY MODAL
    ========================================================= */
 function abrirParty() {
-  const lista = state.party.map((p, i) =>
-    `${i === state.ativo ? "→ " : "  "}${p.nome} Nv${p.nivel} (${p.estereotipo}) — HP ${p.hp}/${p.hpMax} · Foco ${p.foco}/${p.focoMax}`
-  ).join("\n");
-  const itensTxt = Object.entries(state.inventario)
-    .map(([id, qtd]) => `${getItem(id)?.nome} ×${qtd}`).join(" · ") || "Nenhum item";
+  let screen = document.getElementById("screen-party");
+  if (!screen) {
+    screen = document.createElement("section");
+    screen.id = "screen-party";
+    screen.className = "screen";
+    screen.setAttribute("data-testid", "screen-party");
+    document.getElementById("game-container").appendChild(screen);
+  }
 
-  abrirModal("Sua Party",
-    `${lista}\n\nItens: ${itensTxt}\n\nNa batalha, os 3 primeiros vivos entram em campo.`,
-    [
-      { label: "REORDENAR", testid: "modal-reorder", onClick: () => reordenarParty() },
-      { label: "FECHAR", testid: "modal-party-close" }
-    ]);
+  const renderPartyTela = () => {
+    const itensHtml = Object.entries(state.inventario).filter(([,q]) => q > 0).map(([id, qtd]) => {
+      const it = getItem(id);
+      if (!it) return "";
+      return `<button class="pixel-btn small item-btn" data-item="${id}" data-testid="party-item-${id}">${it.nome} ×${qtd}</button>`;
+    }).join("") || `<span class="party-empty">Sem itens.</span>`;
+
+    const membrosHtml = state.party.map((p, idx) => {
+      const emCampo = idx < 3;
+      return `
+        <div class="party-row ${emCampo ? "em-campo" : "reserva"}" data-testid="party-row-${p.id}">
+          <div class="party-pos">${emCampo ? "EM CAMPO" : "RESERVA"}</div>
+          <div class="party-info">
+            <strong>${p.nome}</strong> Nv${p.nivel} · ${p.estereotipo}<br/>
+            HP ${p.hp}/${p.hpMax} · Foco ${p.foco}/${p.focoMax}
+            <div class="party-bars">
+              <div class="bar hp"><div class="bar-fill" style="width:${(p.hp/p.hpMax)*100}%"></div></div>
+              <div class="bar mp"><div class="bar-fill" style="width:${(p.foco/p.focoMax)*100}%"></div></div>
+            </div>
+          </div>
+          <div class="party-actions">
+            <button class="pixel-btn small" data-action="up" data-idx="${idx}" data-testid="party-up-${p.id}" ${idx === 0 ? "disabled" : ""}>↑</button>
+            <button class="pixel-btn small" data-action="down" data-idx="${idx}" data-testid="party-down-${p.id}" ${idx === state.party.length - 1 ? "disabled" : ""}>↓</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    screen.innerHTML = `
+      <div class="party-header">
+        <h2 class="screen-title">Gerenciar Party</h2>
+        <button class="pixel-btn small" id="party-back" data-testid="party-back">VOLTAR</button>
+      </div>
+      <p class="screen-sub">Os 3 primeiros entram em campo. Use ↑/↓ pra reordenar. Selecione um item e depois um aliado pra usar.</p>
+      <div class="party-list">${membrosHtml}</div>
+      <div class="party-inventory">
+        <h3>Inventário</h3>
+        <div id="party-items">${itensHtml}</div>
+        <div id="party-item-hint" class="party-hint"></div>
+      </div>
+    `;
+
+    screen.querySelector("#party-back").onclick = () => { SFX.menu(); fecharParty(); };
+
+    screen.querySelectorAll("[data-action='up']").forEach(b => {
+      b.onclick = () => {
+        const i = parseInt(b.getAttribute("data-idx"));
+        if (i > 0) { [state.party[i-1], state.party[i]] = [state.party[i], state.party[i-1]]; SFX.menu(); salvarJogo(); renderPartyTela(); }
+      };
+    });
+    screen.querySelectorAll("[data-action='down']").forEach(b => {
+      b.onclick = () => {
+        const i = parseInt(b.getAttribute("data-idx"));
+        if (i < state.party.length - 1) { [state.party[i], state.party[i+1]] = [state.party[i+1], state.party[i]]; SFX.menu(); salvarJogo(); renderPartyTela(); }
+      };
+    });
+
+    let itemSelecionado = null;
+    screen.querySelectorAll(".item-btn").forEach(b => {
+      b.onclick = () => {
+        SFX.menu();
+        itemSelecionado = b.getAttribute("data-item");
+        const it = getItem(itemSelecionado);
+        if (it.alvo === "self" || it.tipo === "buff_atk") {
+          aplicarItemForaBatalha(it, state.party[0]);
+          return;
+        }
+        if (it.alvo === "todos_aliados") {
+          aplicarItemForaBatalha(it, state.party[0]);
+          return;
+        }
+        if (it.alvo === "inimigo_unico") {
+          screen.querySelector("#party-item-hint").textContent = "Esse item só funciona em batalha.";
+          return;
+        }
+        screen.querySelector("#party-item-hint").textContent = `Selecione o aliado para receber ${it.nome}.`;
+        screen.querySelectorAll(".party-row").forEach((row, i) => {
+          row.classList.add("selectable");
+          row.onclick = () => {
+            aplicarItemForaBatalha(it, state.party[i]);
+          };
+        });
+      };
+    });
+  };
+
+  const aplicarItemForaBatalha = (item, alvo) => {
+    const tiposPermitidos = ["cura_hp","cura_foco","cura_foco_alto","cura_total","limpar_condicoes","cura_status_drogado"];
+    if (!tiposPermitidos.includes(item.tipo)) {
+      screen.querySelector("#party-item-hint").textContent = "Esse item só funciona em batalha.";
+      return;
+    }
+    SFX.heal();
+    if (item.tipo === "cura_hp") {
+      if (item.alvo === "todos_aliados") {
+        state.party.forEach(p => { p.hp = Math.min(p.hpMax, p.hp + item.valor); });
+      } else { alvo.hp = Math.min(alvo.hpMax, alvo.hp + item.valor); }
+    } else if (item.tipo === "cura_foco" || item.tipo === "cura_foco_alto") {
+      alvo.foco = Math.min(alvo.focoMax, alvo.foco + item.valor);
+    } else if (item.tipo === "cura_total") {
+      alvo.hp = alvo.hpMax; alvo.foco = alvo.focoMax;
+    } else if (item.tipo === "limpar_condicoes") {
+      alvo.condicoes = [];
+    } else if (item.tipo === "cura_status_drogado") {
+      alvo.condicoes = alvo.condicoes.filter(c => c.id !== "drogado");
+      alvo.hp = Math.min(alvo.hpMax, alvo.hp + 15);
+    }
+    state.inventario[item.id]--;
+    if (state.inventario[item.id] <= 0) delete state.inventario[item.id];
+    salvarJogo();
+    renderPartyTela();
+  };
+
+  renderPartyTela();
+  mostrarTela("screen-party");
 }
 
-function reordenarParty() {
-  if (state.party.length <= 1) return;
-  // Move primeiro pro final
-  const primeiro = state.party.shift();
-  state.party.push(primeiro);
-  state.ativo = 0;
-  salvarJogo();
+function fecharParty() {
   renderMapa();
-  abrirParty();
+  mostrarTela("screen-map");
 }
 
 
