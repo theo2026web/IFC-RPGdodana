@@ -1373,7 +1373,8 @@ function instanciarPersonagem(base, nivel = 1) {
     defesa:  base.defesaBase + (nivel - 1) * 1,
     ataques: ataquesIniciais.length > 0 ? ataquesIniciais : ["soco_basico"],
     buffAtk: 0,
-    condicoes: []
+    condicoes: [],
+    cooldowns: {}
   };
 }
 
@@ -2063,6 +2064,13 @@ function checarPerderTurno(c) {
 function processarCondicoesTurno(combatentes) {
   combatentes.forEach(c => {
     if (c.hp <= 0) return;
+    // Decrementa cooldowns
+    if (c.cooldowns) {
+      Object.keys(c.cooldowns).forEach(k => {
+        c.cooldowns[k] = Math.max(0, c.cooldowns[k] - 1);
+        if (c.cooldowns[k] === 0) delete c.cooldowns[k];
+      });
+    }
     const novas = [];
     c.condicoes.forEach(cd => {
       const def = getCondicao(cd.id);
@@ -2315,6 +2323,11 @@ function aplicarEfeitos(usuario, alvo, ataque) {
 function executarAcao(ator, ataque, alvos) {
   if (ataque.custoFoco > 0) ator.foco = Math.max(0, ator.foco - ataque.custoFoco);
   state.stats.acoesUsadas[ataque.id] = (state.stats.acoesUsadas[ataque.id] || 0) + 1;
+  // Cooldown em cura/buff: 1 turno de bloqueio após uso
+  if (ataque.tipoAcao === "cura" || ataque.tipoAcao === "buff") {
+    if (!ator.cooldowns) ator.cooldowns = {};
+    ator.cooldowns[ataque.id] = 2;
+  }
   log(`${ator.nome} usou ${ataque.nome}!`);
 
   // Confuso pode redirecionar para aliado
@@ -2467,7 +2480,9 @@ function avancarAtor() {
 /* ---------- IA INIMIGO ---------- */
 function turnoIA(inimigo) {
   const b = state.batalha;
-  const acoesPossiveis = inimigo.ataques.map(id => getAtaque(id)).filter(a => a && inimigo.foco >= a.custoFoco);
+  if (!inimigo.cooldowns) inimigo.cooldowns = {};
+  const acoesPossiveis = inimigo.ataques.map(id => getAtaque(id)).filter(a =>
+    a && inimigo.foco >= a.custoFoco && !(inimigo.cooldowns[a.id] > 0));
   const escolhido = acoesPossiveis.length > 0
     ? acoesPossiveis[rand(0, acoesPossiveis.length - 1)]
     : getAtaque("soco_basico");
@@ -2490,6 +2505,10 @@ function turnoIA(inimigo) {
 
 function executarAcaoIA(ator, ataque, alvos) {
   if (ataque.custoFoco > 0) ator.foco = Math.max(0, ator.foco - ataque.custoFoco);
+  if (ataque.tipoAcao === "cura" || ataque.tipoAcao === "buff") {
+    if (!ator.cooldowns) ator.cooldowns = {};
+    ator.cooldowns[ataque.id] = 2;
+  }
   log(`${ator.nome} usou ${ataque.nome}!`);
 
   alvos.forEach(alvo => {
