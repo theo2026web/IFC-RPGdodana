@@ -129,11 +129,10 @@
     repeating-linear-gradient(45deg, var(--bg-mid) 0 12px, var(--bg-soft) 12px 24px) !important;
 }
 
-.battle-scene[data-bg="cantina"]    { background-color: #4a2e1a !important; }
-.battle-scene[data-bg="quadra"]     { background-color: #1a4a2e !important; }
-.battle-scene[data-bg="lab"]        { background-color: #0a2a3a !important; }
-.battle-scene[data-bg="patio"]      { background-color: #2a3a1a !important; }
-.battle-scene[data-bg="ponto"]      { background-color: #1a1a2e !important; }
+.battle-scene[data-bg="cafofo"]    { background-color: #4a2e1a !important; }
+.battle-scene[data-bg="lab_34"]     { background-color: #0a2a3a !important; }
+.battle-scene[data-bg="hall"]       { background-color: #2a3a1a !important; }
+.battle-scene[data-bg="virgula"]    { background-color: #1a1a2e !important; }
 
 /* Battle UI bottom — sem sobreposição */
 .battle-ui {

@@ -174,7 +174,7 @@ const ATAQUES = [
     nome: "Soco Básico",
     poder: 10,
     custoFoco: 0,
-    descricao: "Soco direto sem floreios.",
+    descricao: "Porrada",  
     estereotipoDono: "*",
     nivelMinimo: 1,
     tipoAcao: "ataque",
@@ -187,10 +187,10 @@ const ATAQUES = [
   /* ---------- NERD (dano único + debuff defesa) ---------- */
   {
     id: "calc_brutal",
-    nome: "Cálculo Brutal",
+    nome: "Cubo Mágico",
     poder: 16,
     custoFoco: 6,
-    descricao: "Resolve a EDO mental do alvo. Reduz defesa.",
+    descricao: "Começa pela cruz amarela!, Reduz a defesa do alvo.",
     estereotipoDono: "Nerd",
     nivelMinimo: 1,
     tipoAcao: "misto",
@@ -948,49 +948,49 @@ const ITENS = [
    ========================================================= */
 const LOCAIS = [
   {
-    id: "patio",
-    nome: "Pátio Principal",
-    bg: "patio",
+    id: "hall",
+    nome: "Hall",
+    bg: "hall",
     icone: "P",
-    descricao: "Onde tudo começa e tudo termina.",
+    descricao: "Aqui onde tudo começa",
     desbloqueioVitorias: 0,
-    inimigosPossiveis: ["rosa", "bia", "tony", "rafa", "leo", "rai", "otto", "mari"]
+    inimigosPossiveis: ["dg", "bia", "turvo", "jardel", "lorenzo", "nicolas", "moraes", "baixa_memoria"]
   },
   {
-    id: "cantina",
-    nome: "Cantina Lotada",
-    bg: "cantina",
+    id: "cafofo",
+    nome: "Cafofo",
+    bg: "cafofo",
     icone: "C",
-    descricao: "O cheiro de coxinha vencida paira no ar.",
+    descricao: "Cafofo, um lugar para descansar,comer e jogar Coup",
     desbloqueioVitorias: 2,
-    inimigosPossiveis: ["mello", "rosa", "bia", "luna", "bruno", "fe", "mari"]
+    inimigosPossiveis: ["mello", "dg", "bia", "luna", "theo", "ruivo", "baixa_memoria"]
   },
   {
     id: "quadra",
-    nome: "Quadra de Futsal",
+    nome: "Quadra",
     bg: "quadra",
     icone: "Q",
-    descricao: "Marcações apagadas, redes rasgadas, ego inflado.",
+    descricao: "O volei chão reina nesse local.",
     desbloqueioVitorias: 4,
-    inimigosPossiveis: ["dana", "tony", "mello", "ana", "bruno", "kaio"]
+    inimigosPossiveis: ["dana", "turvo", "mello", "antony", "theo", "amorim"]
   },
   {
-    id: "lab",
-    nome: "Laboratório de Informática",
-    bg: "lab",
+    id: "lab_34",
+    nome: "Lab 34",
+    bg: "lab_34",
     icone: "L",
-    descricao: "Monitores antigos zumbem em uma frequência estranha.",
+    descricao: "Com um hack é possível acabar com a internet",
     desbloqueioVitorias: 6,
-    inimigosPossiveis: ["puskas", "kevin", "rafa", "leo", "davi", "kaio", "adriana"]
+    inimigosPossiveis: ["puskas", "thiaguinho", "jardel", "lorenzo", "max", "amorim", "joedio"]
   },
   {
-    id: "ponto",
-    nome: "Ponto de Ônibus",
-    bg: "ponto",
+    id: "virgula",
+    nome: "Vírgula",
+    bg: "virgula",
     icone: "O",
-    descricao: "Cheira a álcool em gel e tédio.",
+    descricao: "Cuidado por onde anda...",
     desbloqueioVitorias: 9,
-    inimigosPossiveis: ["kevin", "rafa", "puskas", "dana", "luna", "ze", "otto", "rai", "adriana"]
+    inimigosPossiveis: ["thiaguinho", "jardel", "puskas", "dana", "luna", "edukoff", "moraes", "nicolas", "joedio"]
   }
 ];
 
@@ -1011,7 +1011,7 @@ const PERSONAGENS = [
     ataqueBase: 14,
     defesaBase: 7,
     ataques: ["calc_brutal", "teorema_destruidor", "explicar_tudo"],
-    descricao: "Carrega três HDs externos só com PDFs.",
+    descricao: "Meus anos de Kumon vão te fazer sofrer...",
     isStarter: true
   },
 
@@ -1026,7 +1026,7 @@ const PERSONAGENS = [
     ataqueBase: 13,
     defesaBase: 7,
     ataques: ["solo_de_guitarra", "harmonia_inspiradora", "acorde_sombrio", "cancao_da_paz"],
-    descricao: "Compõe músicas no banheiro entre aulas.",
+    descricao: "O Tempo não para",
     isStarter: true
   },
 
@@ -1041,28 +1041,28 @@ const PERSONAGENS = [
     ataqueBase: 14,
     defesaBase: 8,
     ataques: ["headbutt_idiota", "intimidacao", "soco_brutal", "grito_de_guerra"],
-    descricao: "Sabe seu nome, sua matrícula e seu medo.",
+    descricao: "Sem aliança não tem compromisso!",
     isStarter: true
   },
 
   {
-    id: "tony",
-    nome: "Tony",
+    id: "turvo",
+    nome: "Turvo",
     estereotipo: "Atleta",
-    sprite: "assets/tony.png",
+    sprite: "assets/turvo.png",
     cor: "#6effb0",
     hpBase: 90,
     focoBase: 40,
     ataqueBase: 14,
     defesaBase: 8,
     ataques: ["carrinho_violento", "supino_de_castigo", "varrer_a_quadra"],
-    descricao: "Faz 100 abdominais entre uma aula e outra.",
+    descricao: "O tapa que levei me fortaleceu",
     isStarter: false
   },
 
   {
-    id: "rosa",
-    nome: "Rosa",
+    id: "dg",
+    nome: "Dg",
     estereotipo: "Entroza",
     sprite: "assets/rosa.png",
     cor: "#ffcc4d",
@@ -1071,13 +1071,13 @@ const PERSONAGENS = [
     ataqueBase: 11,
     defesaBase: 6,
     ataques: ["viagem_existencial", "cheiro_estranho", "fumacinha"],
-    descricao: "Acredita que o IFC é uma simulação.",
+    descricao: "ssghnn",
     isStarter: false
   },
 
   {
-    id: "rafa",
-    nome: "Prof. Rafa",
+    id: "jardel",
+    nome: "Jardel",
     estereotipo: "Professor",
     sprite: "assets/rafa.png",
     cor: "#ff8c42",
@@ -1086,7 +1086,7 @@ const PERSONAGENS = [
     ataqueBase: 13,
     defesaBase: 9,
     ataques: ["chamada_oral", "advertencia", "prova_surpresa"],
-    descricao: "Não aceita atraso e não responde no privado.",
+    descricao: "Te fuzilo de bala te deixo igual papel",
     isStarter: false
   },
 
@@ -1101,13 +1101,13 @@ const PERSONAGENS = [
     ataqueBase: 12,
     defesaBase: 7,
     ataques: ["textao", "cancelar", "consciencia_coletiva"],
-    descricao: "Tem 8 redes sociais e usa todas pra denunciar.",
+    descricao: "Meu maxzinho!",
     isStarter: false
   },
 
   {
-    id: "kevin",
-    nome: "Kevin",
+    id: "thiaguinho",
+    nome: "Thiaguinho",
     estereotipo: "Estranho",
     sprite: "assets/kevin.png",
     cor: "#5a189a",
@@ -1116,13 +1116,13 @@ const PERSONAGENS = [
     ataqueBase: 12,
     defesaBase: 7,
     ataques: ["olhar_perturbador", "sussurro_incompreensivel", "presenca_perturbadora"],
-    descricao: "Aparece em fotos sem ter sido convidado.",
+    descricao: "A minha ceita vai acabar com você",
     isStarter: false
   },
 
   {
-    id: "leo",
-    nome: "Léo",
+    id: "lorenzo",
+    nome: "Lorenzo",
     estereotipo: "Gamer",
     sprite: "assets/leo.png",
     cor: "#00b4d8",
@@ -1131,7 +1131,7 @@ const PERSONAGENS = [
     ataqueBase: 13,
     defesaBase: 6,
     ataques: ["combo_breaker", "estrategia", "rage_quit"],
-    descricao: "Joga ranqueada em vez de fazer trabalho.",
+    descricao: "Os escoteiros são mais fortes do que você pensa",
     isStarter: false
   },
 
@@ -1146,13 +1146,13 @@ const PERSONAGENS = [
     ataqueBase: 11,
     defesaBase: 8,
     ataques: ["elogio_sincero", "abraco_quentinho", "boa_energia", "escudo_de_bondade"],
-    descricao: "Sempre tem um chiclete pra te oferecer.",
+    descricao: "Calma cara.. que isso?",
     isStarter: false
   },
 
   {
-    id: "davi",
-    nome: "Davi",
+    id: "max",
+    nome: "Max",
     estereotipo: "Nerd",
     sprite: "assets/davi.png",
     cor: "#48cae4",
@@ -1161,13 +1161,13 @@ const PERSONAGENS = [
     ataqueBase: 13,
     defesaBase: 6,
     ataques: ["argumento_irrefutavel", "calc_brutal"],
-    descricao: "Carrega 5 livros de cálculo na mochila.",
+    descricao: "Tem berga?",
     isStarter: false
   },
 
   {
-    id: "bruno",
-    nome: "Bruno",
+    id: "theo",
+    nome: "Theo",
     estereotipo: "Valentão",
     sprite: "assets/bruno.png",
     cor: "#e63946",
@@ -1176,13 +1176,13 @@ const PERSONAGENS = [
     ataqueBase: 15,
     defesaBase: 10,
     ataques: ["empurrao_surdo", "headbutt_idiota"],
-    descricao: "Bate primeiro, conversa depois.",
+    descricao: "Pela fedidissima eu vou te matar",
     isStarter: false
   },
 
   {
-    id: "ana",
-    nome: "Ana",
+    id: "antony",
+    nome: "Antony",
     estereotipo: "Atleta",
     sprite: "assets/ana.png",
     cor: "#52b788",
@@ -1191,13 +1191,13 @@ const PERSONAGENS = [
     ataqueBase: 15,
     defesaBase: 8,
     ataques: ["spike_aereo", "carrinho_violento"],
-    descricao: "Capitã do time, joga limpo.",
+    descricao: "Minha ex não iria gostar disso",
     isStarter: false
   },
 
   {
-    id: "kaio",
-    nome: "Kaio",
+    id: "amorim",
+    nome: "Amorim",
     estereotipo: "Gamer",
     sprite: "assets/kaio.png",
     cor: "#0096c7",
@@ -1206,13 +1206,13 @@ const PERSONAGENS = [
     ataqueBase: 14,
     defesaBase: 6,
     ataques: ["gg_ez", "combo_breaker"],
-    descricao: "Stream 8h por dia, não sabe sair do gás.",
+    descricao: "eu... não vou deixar você falar me ofender!",
     isStarter: false
   },
 
   {
-    id: "fe",
-    nome: "Fê",
+    id: "ruivo",
+    nome: "Ruivo",
     estereotipo: "Músico",
     sprite: "assets/fe.png",
     cor: "#a06cd5",
@@ -1221,13 +1221,13 @@ const PERSONAGENS = [
     ataqueBase: 13,
     defesaBase: 7,
     ataques: ["loop_hipnotico", "solo_de_guitarra"],
-    descricao: "DJ underground, mistura tudo.",
+    descricao: "Ah Nathalia vai ser minha Theo..",
     isStarter: false
   },
 
   {
-    id: "ze",
-    nome: "Zé",
+    id: "edukoff",
+    nome: "Edukoff",
     estereotipo: "Entroza",
     sprite: "assets/ze.png",
     cor: "#ffb703",
@@ -1236,13 +1236,13 @@ const PERSONAGENS = [
     ataqueBase: 12,
     defesaBase: 6,
     ataques: ["olhar_distante", "viagem_existencial"],
-    descricao: "Não sabe que dia é hoje.",
+    descricao: "Dai maninho.",
     isStarter: false
   },
 
   {
-    id: "adriana",
-    nome: "Profa. Adriana",
+    id: "joedio",
+    nome: "Joédio",
     estereotipo: "Professor",
     sprite: "assets/adriana.png",
     cor: "#fb8500",
@@ -1251,13 +1251,13 @@ const PERSONAGENS = [
     ataqueBase: 14,
     defesaBase: 9,
     ataques: ["caderneta", "advertencia"],
-    descricao: "Lê redação em voz alta na frente da turma.",
+    descricao: "Farmar aureas não vai te salvar da minha bronca",
     isStarter: false
   },
 
   {
-    id: "rai",
-    nome: "Rai",
+    id: "nicolas",
+    nome: "Nicolas",
     estereotipo: "Woke",
     sprite: "assets/rai.png",
     cor: "#7b2cbf",
@@ -1266,13 +1266,13 @@ const PERSONAGENS = [
     ataqueBase: 13,
     defesaBase: 7,
     ataques: ["indireta_pesada", "textao"],
-    descricao: "Faz textão a cada 2 horas.",
+    descricao: "A Anarquia vai florecer!",
     isStarter: false
   },
 
   {
-    id: "otto",
-    nome: "Otto",
+    id: "moraes",
+    nome: "Moraes",
     estereotipo: "Estranho",
     sprite: "assets/otto.png",
     cor: "#6f2dbd",
@@ -1281,13 +1281,13 @@ const PERSONAGENS = [
     ataqueBase: 13,
     defesaBase: 7,
     ataques: ["habito_esquisito", "olhar_perturbador"],
-    descricao: "Coleciona pedras achadas no chão.",
+    descricao: "Nenhum animal fugira de mim",
     isStarter: false
   },
 
   {
-    id: "mari",
-    nome: "Mari",
+    id: "baixa_memoria",
+    nome: "Baixa Memoria",
     estereotipo: "Gente Fina",
     sprite: "assets/mari.png",
     cor: "#ade8f4",
@@ -1296,7 +1296,7 @@ const PERSONAGENS = [
     ataqueBase: 11,
     defesaBase: 9,
     ataques: ["acolhimento", "elogio_sincero"],
-    descricao: "Tem chá pra cada intervalo.",
+    descricao: "Os cubos mágicos me ajudam a lembrar que a bondade é o caminho",
     isStarter: false
   },
 
@@ -1311,7 +1311,7 @@ const PERSONAGENS = [
     ataqueBase: 22,
     defesaBase: 14,
     ataques: ["tentaculo_caotico", "ira_octopus", "prova_surpresa", "advertencia"],
-    descricao: "O diretor das sombras. Oito braços, mil broncas.",
+    descricao: "O professor das sombras. Oito braços, mil broncas.",
     isStarter: false,
     isBoss: true
   }
@@ -1525,24 +1525,39 @@ function sombrear(hex, amt) {
 
 function montarSprite(targetEl, personagem) {
   targetEl.innerHTML = "";
-  if (personagem.sprite) {
-    // Loading placeholder discreto (sem flash do canvas)
-    const placeholder = document.createElement("div");
-    placeholder.className = "sprite-loading";
-    placeholder.textContent = "...";
-    targetEl.appendChild(placeholder);
 
-    const img = new Image();
-    img.onload  = () => { targetEl.innerHTML = ""; targetEl.appendChild(img); };
-    img.onerror = () => {
+  const spriteSources = [];
+  if (personagem.sprite) spriteSources.push(personagem.sprite);
+  if (personagem.id) {
+    const spriteFromId = `assets/${personagem.id}.png`;
+    if (!spriteSources.includes(spriteFromId)) spriteSources.push(spriteFromId);
+  }
+
+  if (spriteSources.length === 0) {
+    targetEl.appendChild(gerarSpritePixel(personagem, targetEl.clientWidth));
+    return;
+  }
+
+  const placeholder = document.createElement("div");
+  placeholder.className = "sprite-loading";
+  placeholder.textContent = "...";
+  targetEl.appendChild(placeholder);
+
+  function tentarCarregar(index) {
+    if (index >= spriteSources.length) {
       targetEl.innerHTML = "";
       targetEl.appendChild(gerarSpritePixel(personagem, targetEl.clientWidth));
-    };
-    img.src = personagem.sprite;
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => { targetEl.innerHTML = ""; targetEl.appendChild(img); };
+    img.onerror = () => { tentarCarregar(index + 1); };
     img.alt = personagem.nome;
-  } else {
-    targetEl.appendChild(gerarSpritePixel(personagem, targetEl.clientWidth));
+    img.src = spriteSources[index];
   }
+
+  tentarCarregar(0);
 }
 
 

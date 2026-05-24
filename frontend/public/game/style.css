@@ -433,11 +433,11 @@ body::before {
   position: relative;
 }
 
-.battle-scene[data-bg="cantina"]    { background-color: #3a2a1a; }
+.battle-scene[data-bg="cafofo"]    { background-color: #3a2a1a; }
 .battle-scene[data-bg="quadra"]     { background-color: #1a3a2a; }
-.battle-scene[data-bg="lab"]        { background-color: #0a1a3a; }
-.battle-scene[data-bg="patio"]      { background-color: #2a2a1a; }
-.battle-scene[data-bg="ponto"]      { background-color: #1a1a2a; }
+.battle-scene[data-bg="lab_34"]     { background-color: #0a1a3a; }
+.battle-scene[data-bg="hall"]       { background-color: #2a2a1a; }
+.battle-scene[data-bg="virgula"]    { background-color: #1a1a2a; }
 
 .enemy-area, .player-area {
   display: flex;
