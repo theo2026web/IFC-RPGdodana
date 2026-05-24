@@ -657,18 +657,46 @@ const ATAQUES = [
     efeitos: [{condicao: "regenerando", chance: 100, turnos: 3, target: "alvo"}]
   },
   {
-    id: "escudo_de_bondade",
-    nome: "Escudo de Bondade",
-    poder: 0,
+    id: "tentaculo_caotico",
+    nome: "Tentáculo Caótico",
+    poder: 22,
     custoFoco: 10,
-    descricao: "Protege um aliado. +DEF por 3 turnos.",
-    estereotipoDono: "Gente Fina",
-    nivelMinimo: 4,
-    tipoAcao: "buff",
-    alvo: "aliado_unico",
+    descricao: "Oito tentáculos atingem todos os inimigos com dano e confusão.",
+    estereotipoDono: "Professor",
+    nivelMinimo: 99,
+    tipoAcao: "misto",
+    alvo: "todos_inimigos",
+    precisao: 88,
+    chanceCrit: 18,
+    efeitos: [{condicao: "confuso", chance: 60, turnos: 2, target: "alvo"}]
+  },
+  {
+    id: "ira_octopus",
+    nome: "Ira do Octopus",
+    poder: 38,
+    custoFoco: 22,
+    descricao: "Dano massivo em alvo único. Causa sangramento.",
+    estereotipoDono: "Professor",
+    nivelMinimo: 99,
+    tipoAcao: "ataque",
+    alvo: "inimigo_unico",
+    precisao: 90,
+    chanceCrit: 30,
+    efeitos: [{condicao: "sangrando", chance: 70, turnos: 3, target: "alvo"}]
+  },
+  {
+    id: "soco_basico_end",
+    nome: "_end",
+    poder: 0,
+    custoFoco: 0,
+    descricao: "_",
+    estereotipoDono: "_",
+    nivelMinimo: 99,
+    tipoAcao: "ataque",
+    alvo: "self",
     precisao: 100,
     chanceCrit: 0,
-    efeitos: [{condicao: "protegido", chance: 100, turnos: 3, target: "alvo"}]
+    efeitos: []
   }
 ];
 
@@ -725,11 +753,21 @@ const ITENS = [
    ========================================================= */
 const LOCAIS = [
   {
+    id: "patio",
+    nome: "Pátio Principal",
+    bg: "patio",
+    icone: "P",
+    descricao: "Onde tudo começa e tudo termina.",
+    desbloqueioVitorias: 0,
+    inimigosPossiveis: ["rosa", "bia", "tony", "rafa", "leo"]
+  },
+  {
     id: "cantina",
     nome: "Cantina Lotada",
     bg: "cantina",
     icone: "C",
     descricao: "O cheiro de coxinha vencida paira no ar.",
+    desbloqueioVitorias: 2,
     inimigosPossiveis: ["mello", "rosa", "bia", "luna"]
   },
   {
@@ -738,6 +776,7 @@ const LOCAIS = [
     bg: "quadra",
     icone: "Q",
     descricao: "Marcações apagadas, redes rasgadas, ego inflado.",
+    desbloqueioVitorias: 4,
     inimigosPossiveis: ["dana", "tony", "mello"]
   },
   {
@@ -746,15 +785,8 @@ const LOCAIS = [
     bg: "lab",
     icone: "L",
     descricao: "Monitores antigos zumbem em uma frequência estranha.",
+    desbloqueioVitorias: 6,
     inimigosPossiveis: ["puskas", "kevin", "rafa", "leo"]
-  },
-  {
-    id: "patio",
-    nome: "Pátio Principal",
-    bg: "patio",
-    icone: "P",
-    descricao: "Onde tudo começa e tudo termina.",
-    inimigosPossiveis: ["rosa", "bia", "tony", "rafa", "leo"]
   },
   {
     id: "ponto",
@@ -762,6 +794,7 @@ const LOCAIS = [
     bg: "ponto",
     icone: "O",
     descricao: "Cheira a álcool em gel e tédio.",
+    desbloqueioVitorias: 9,
     inimigosPossiveis: ["kevin", "rafa", "puskas", "dana", "luna"]
   }
 ];
@@ -778,10 +811,10 @@ const PERSONAGENS = [
     estereotipo: "Nerd",
     sprite: "assets/puskas.png",
     cor: "#7af0ff",
-    hpBase: 70,
-    focoBase: 60,
-    ataqueBase: 12,
-    defesaBase: 6,
+    hpBase: 78,
+    focoBase: 68,
+    ataqueBase: 14,
+    defesaBase: 7,
     ataques: ["calc_brutal", "teorema_destruidor", "explicar_tudo"],
     descricao: "Carrega três HDs externos só com PDFs.",
     isStarter: true
@@ -793,10 +826,10 @@ const PERSONAGENS = [
     estereotipo: "Músico",
     sprite: "assets/dana.png",
     cor: "#c77dff",
-    hpBase: 72,
-    focoBase: 65,
-    ataqueBase: 12,
-    defesaBase: 6,
+    hpBase: 82,
+    focoBase: 70,
+    ataqueBase: 13,
+    defesaBase: 7,
     ataques: ["solo_de_guitarra", "harmonia_inspiradora", "acorde_sombrio", "cancao_da_paz"],
     descricao: "Compõe músicas no banheiro entre aulas.",
     isStarter: true
@@ -808,10 +841,10 @@ const PERSONAGENS = [
     estereotipo: "Valentão",
     sprite: "assets/mello.png",
     cor: "#ff4d6d",
-    hpBase: 95,
-    focoBase: 35,
-    ataqueBase: 16,
-    defesaBase: 9,
+    hpBase: 85,
+    focoBase: 38,
+    ataqueBase: 14,
+    defesaBase: 8,
     ataques: ["headbutt_idiota", "intimidacao", "soco_brutal", "grito_de_guerra"],
     descricao: "Sabe seu nome, sua matrícula e seu medo.",
     isStarter: true
@@ -908,18 +941,19 @@ const PERSONAGENS = [
   },
 
   {
-    id: "luna",
-    nome: "Luna",
-    estereotipo: "Gente Fina",
-    sprite: "assets/luna.png",
-    cor: "#90e0ef",
-    hpBase: 82,
-    focoBase: 60,
-    ataqueBase: 11,
-    defesaBase: 8,
-    ataques: ["elogio_sincero", "abraco_quentinho", "boa_energia", "escudo_de_bondade"],
-    descricao: "Sempre tem um chiclete pra te oferecer.",
-    isStarter: false
+    id: "cleber_octopus",
+    nome: "Cleber Octopus",
+    estereotipo: "Professor",
+    sprite: "assets/cleber.png",
+    cor: "#8b0000",
+    hpBase: 240,
+    focoBase: 120,
+    ataqueBase: 22,
+    defesaBase: 14,
+    ataques: ["tentaculo_caotico", "ira_octopus", "prova_surpresa", "advertencia"],
+    descricao: "O diretor das sombras. Oito braços, mil broncas.",
+    isStarter: false,
+    isBoss: true
   }
 
 ];
@@ -937,7 +971,10 @@ const state = {
   derrotados: [],
   batalha: null,
   iniciado: false,
-  somAtivo: true
+  somAtivo: true,
+  batalhasPorLocal: {},
+  stats: { acoesUsadas: {}, inimigosDerrotados: 0, batalhasVencidas: 0, criticosDados: 0 },
+  bossDerrotado: false
 };
 
 
@@ -1153,16 +1190,12 @@ function montarSprite(targetEl, personagem) {
    ========================================================= */
 function salvarJogo() {
   const data = {
-    party: state.party,
-    ativo: state.ativo,
-    inventario: state.inventario,
-    derrotados: state.derrotados,
-    iniciado: state.iniciado,
-    somAtivo: state.somAtivo,
+    party: state.party, ativo: state.ativo, inventario: state.inventario,
+    derrotados: state.derrotados, iniciado: state.iniciado, somAtivo: state.somAtivo,
+    batalhasPorLocal: state.batalhasPorLocal, stats: state.stats, bossDerrotado: state.bossDerrotado,
     ts: Date.now()
   };
-  try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); return true; }
-  catch (e) { return false; }
+  try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); return true; } catch (e) { return false; }
 }
 
 function carregarJogo() {
@@ -1170,12 +1203,13 @@ function carregarJogo() {
     const raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return false;
     const data = JSON.parse(raw);
-    state.party       = data.party       || [];
-    state.ativo       = data.ativo       || 0;
-    state.inventario  = data.inventario  || {};
-    state.derrotados  = data.derrotados  || [];
-    state.iniciado    = data.iniciado    || false;
-    state.somAtivo    = data.somAtivo !== undefined ? data.somAtivo : true;
+    state.party = data.party || []; state.ativo = data.ativo || 0;
+    state.inventario = data.inventario || {}; state.derrotados = data.derrotados || [];
+    state.iniciado = data.iniciado || false;
+    state.somAtivo = data.somAtivo !== undefined ? data.somAtivo : true;
+    state.batalhasPorLocal = data.batalhasPorLocal || {};
+    state.stats = data.stats || { acoesUsadas: {}, inimigosDerrotados: 0, batalhasVencidas: 0, criticosDados: 0 };
+    state.bossDerrotado = data.bossDerrotado || false;
     return state.party.length > 0;
   } catch (e) { return false; }
 }
@@ -1281,20 +1315,126 @@ function escolherStarter(personagemBase) {
 function renderMapa() {
   const grid = document.getElementById("map-grid");
   grid.innerHTML = "";
+  const vitorias = state.stats.batalhasVencidas;
+  const todosLocaisConquistados = LOCAIS.every(l => {
+    const gr = state.batalhasPorLocal[l.id];
+    return gr && gr.every(g => g.vencido);
+  });
   LOCAIS.forEach(loc => {
     const card = document.createElement("div");
-    card.className = "location-card";
+    const desbloqueado = vitorias >= (loc.desbloqueioVitorias || 0);
+    card.className = "location-card" + (desbloqueado ? "" : " locked");
     card.setAttribute("data-testid", `location-${loc.id}`);
-    card.innerHTML = `
-      <div class="loc-icon">${loc.icone}</div>
-      <h3>${loc.nome}</h3>
-      <p>${loc.descricao}</p>
-      <div class="loc-foes">??? alunos suspeitos vistos por aqui</div>
-    `;
-    card.onclick = () => { SFX.menu(); irParaLocacao(loc); };
+    card.setAttribute("data-bg", loc.bg);
+    if (desbloqueado) {
+      const gr = state.batalhasPorLocal[loc.id];
+      const restantes = gr ? gr.filter(g => !g.vencido).length : 3;
+      const conquistado = gr && restantes === 0;
+      card.innerHTML = `
+        <div class="loc-icon">${conquistado ? "✓" : loc.icone}</div>
+        <h3>${loc.nome}</h3>
+        <p>${loc.descricao}</p>
+        <div class="loc-foes">${conquistado ? "Local conquistado" : `${restantes}/3 duelos restantes`}</div>
+      `;
+      card.onclick = () => { SFX.menu(); irParaLocacao(loc); };
+    } else {
+      const faltam = loc.desbloqueioVitorias - vitorias;
+      card.innerHTML = `
+        <div class="loc-icon">🔒</div>
+        <h3>${loc.nome}</h3>
+        <p>Vença mais ${faltam} ${faltam === 1 ? "batalha" : "batalhas"} para desbloquear.</p>
+        <div class="loc-foes">Bloqueado</div>
+      `;
+    }
     grid.appendChild(card);
   });
+  if (todosLocaisConquistados && !state.bossDerrotado) {
+    const bossCard = document.createElement("div");
+    bossCard.className = "location-card boss-card";
+    bossCard.setAttribute("data-testid", "location-boss");
+    bossCard.innerHTML = `
+      <div class="loc-icon">👁</div>
+      <h3>CLEBER OCTOPUS</h3>
+      <p>O Diretor das Sombras te aguarda. Última batalha.</p>
+      <div class="loc-foes">BOSS FINAL</div>
+    `;
+    bossCard.onclick = () => {
+      SFX.menu();
+      state.batalha_grupo_idx = 0;
+      mostrarDialogoBoss(() => {
+        iniciarBatalha([getPersonagem("cleber_octopus")], { id: "boss", nome: "Sala do Diretor", bg: "boss" });
+      });
+    };
+    grid.appendChild(bossCard);
+  }
   renderPlayerStatus();
+}
+
+function mostrarDialogoBoss(onFinish) {
+  let overlay = document.getElementById("boss-intro");
+  if (!overlay) {
+    overlay = document.createElement("div");
+    overlay.id = "boss-intro";
+    document.getElementById("game-container").appendChild(overlay);
+  }
+  overlay.innerHTML = `
+    <div class="boss-intro-frame">
+      <div class="boss-portrait"><img src="assets/cleber.png" alt="Cleber Octopus"/></div>
+      <div class="boss-name">CLEBER OCTOPUS</div>
+      <div class="boss-title">Diretor das Sombras · Mestre do ENIAC</div>
+      <div class="boss-dialog" id="boss-dialog-text"></div>
+      <button class="pixel-btn" data-testid="btn-boss-start" id="btn-boss-start" style="opacity:0;pointer-events:none">INICIAR BATALHA</button>
+    </div>
+  `;
+  overlay.classList.add("active");
+
+  const fala = '"O ENIAC é mais poderoso que todos vocês... esse é o seu fim."';
+  const el = document.getElementById("boss-dialog-text");
+  let i = 0;
+  const typer = setInterval(() => {
+    el.textContent = fala.slice(0, ++i);
+    if (i % 3 === 0) SFX.beep(420, 0.02, "square", 0.04);
+    if (i >= fala.length) {
+      clearInterval(typer);
+      const btn = document.getElementById("btn-boss-start");
+      btn.style.opacity = "1";
+      btn.style.pointerEvents = "auto";
+      btn.onclick = () => {
+        SFX.menu();
+        overlay.classList.remove("active");
+        onFinish();
+      };
+    }
+  }, 35);
+}
+
+function mostrarTelaFinal() {
+  const screen = document.getElementById("screen-final") || (() => {
+    const s = document.createElement("section");
+    s.id = "screen-final";
+    s.className = "screen";
+    document.getElementById("game-container").appendChild(s);
+    return s;
+  })();
+  const topAcoes = Object.entries(state.stats.acoesUsadas).sort((a,b) => b[1]-a[1]).slice(0,5);
+  const topChar = state.party.slice().sort((a,b) => (b.nivel*100+b.xp) - (a.nivel*100+a.xp))[0];
+  screen.innerHTML = `
+    <div class="final-frame">
+      <h1 class="title-main" style="color:var(--accent)">VITÓRIA!</h1>
+      <h2 class="title-sub">Você derrotou Cleber Octopus.</h2>
+      <p class="title-flavor">O IFC Sombrio finalmente conhece a luz.</p>
+      <div class="stats-grid">
+        <div><strong>Batalhas vencidas:</strong> ${state.stats.batalhasVencidas}</div>
+        <div><strong>Inimigos derrotados:</strong> ${state.stats.inimigosDerrotados}</div>
+        <div><strong>Críticos dados:</strong> ${state.stats.criticosDados}</div>
+        <div><strong>Personagem destaque:</strong> ${topChar ? `${topChar.nome} Nv${topChar.nivel}` : "—"}</div>
+        <div><strong>Tamanho da party:</strong> ${state.party.length}</div>
+        <div><strong>Top ações:</strong><br/>${topAcoes.map(([id,n]) => `• ${getAtaque(id)?.nome||id}: ${n}`).join("<br/>") || "—"}</div>
+      </div>
+      <button class="pixel-btn" data-testid="btn-final-restart" onclick="apagarSave();location.reload();">JOGAR DE NOVO</button>
+    </div>
+  `;
+  mostrarTela("screen-final");
 }
 
 function renderPlayerStatus() {
@@ -1362,8 +1502,6 @@ function iniciarBatalha(inimigosBases, loc) {
     const nv = Math.max(1, nivelMedio + rand(-1, 1));
     return instanciarPersonagem(b, nv);
   });
-
-  // Party em campo: até 3 primeiros vivos
   const partyEmCampo = state.party.filter(p => p.hp > 0).slice(0, 3);
 
   state.batalha = {
@@ -1371,6 +1509,7 @@ function iniciarBatalha(inimigosBases, loc) {
     inimigosBaseIds: inimigosBases.map(b => b.id),
     partyEmCampo: partyEmCampo,
     local: loc,
+    grupoIdx: state.batalha_grupo_idx,
     turnoAtor: 0,
     fase: "player",
     log: [],
@@ -1782,7 +1921,7 @@ function aplicarEfeitos(usuario, alvo, ataque) {
 /* ---------- EXECUTAR AÇÃO ---------- */
 function executarAcao(ator, ataque, alvos) {
   if (ataque.custoFoco > 0) ator.foco = Math.max(0, ator.foco - ataque.custoFoco);
-
+  state.stats.acoesUsadas[ataque.id] = (state.stats.acoesUsadas[ataque.id] || 0) + 1;
   log(`${ator.nome} usou ${ataque.nome}!`);
 
   // Confuso pode redirecionar para aliado
@@ -1881,12 +2020,15 @@ function trocarPorReserva(reserva) {
 
 function tentarFugir() {
   const b = state.batalha;
-  if (Math.random() < 0.6) {
+  if (b.fugindo) return;
+  b.fugindo = true;
+  if (Math.random() < 0.55) {
     log("Você fugiu da batalha!", "system");
     b.acabou = true;
     setTimeout(() => { renderMapa(); mostrarTela("screen-map"); }, 900);
   } else {
-    log("Não conseguiu fugir!", "weak");
+    log("Não conseguiu fugir! Você perdeu o turno.", "weak");
+    b.fugindo = false;
     avancarAtor();
   }
 }
@@ -1966,46 +2108,52 @@ function finalizarVitoria() {
   b.acabou = true;
   SFX.victory();
 
+  // Marca grupo como vencido
+  if (b.local && b.grupoIdx !== undefined && state.batalhasPorLocal[b.local.id]) {
+    state.batalhasPorLocal[b.local.id][b.grupoIdx].vencido = true;
+  }
+  state.stats.batalhasVencidas++;
+  state.stats.inimigosDerrotados += b.inimigos.length;
+  if (b.inimigos.some(i => i.id === "cleber_octopus")) {
+    state.bossDerrotado = true;
+  }
+
   const xpTotal = b.inimigos.reduce((s, i) => s + (20 + i.nivel * 10), 0);
-  // Distribui XP entre party em campo
   const vivos = b.partyEmCampo.filter(p => p.hp > 0);
   const xpPorAluno = vivos.length > 0 ? Math.floor(xpTotal / vivos.length) : xpTotal;
   log(`Vitória! +${xpPorAluno} XP para cada aluno em campo.`, "system");
   vivos.forEach(p => ganharXp(p, xpPorAluno));
-
-  // Limpa condições e buff
   state.party.forEach(p => { p.condicoes = []; p.buffAtk = 0; });
-
-  // Marca derrotados
   b.inimigosBaseIds.forEach(id => { if (!state.derrotados.includes(id)) state.derrotados.push(id); });
 
-  // Loot
   if (Math.random() < 0.6) {
     const drop = ITENS[rand(0, ITENS.length - 2)];
     state.inventario[drop.id] = (state.inventario[drop.id] || 0) + 1;
     log(`Você encontrou: ${drop.nome}!`, "system");
   }
 
-  // Recrutamento (1 chance no grupo)
+  // Boss check: se for boss, vai pra tela final
+  if (state.bossDerrotado) {
+    salvarJogo();
+    setTimeout(() => mostrarTelaFinal(), 1800);
+    return;
+  }
+
   const podeRecrutar = state.party.length < 6;
-  const candidato = podeRecrutar
-    ? b.inimigosBaseIds.find(id => !state.party.some(p => p.id === id))
-    : null;
+  const candidato = podeRecrutar ? b.inimigosBaseIds.find(id => !state.party.some(p => p.id === id) && id !== "cleber_octopus") : null;
 
   if (candidato && Math.random() < 0.4) {
     const base = getPersonagem(candidato);
     setTimeout(() => {
       abrirModal("Recrutar aluno?",
-        `${base.nome} (${base.estereotipo}) parece disposto a se juntar à party. Aceitar?`,
+        `${base.nome} (${base.estereotipo}) parece disposto a se juntar à party.`,
         [
           { label: "RECUSAR", testid: "recruit-no", onClick: () => voltarAoMapa() },
           { label: "RECRUTAR", testid: "recruit-yes", onClick: () => {
               const novo = instanciarPersonagem(base, Math.max(1, state.party[state.ativo].nivel - 1));
-              state.party.push(novo);
-              salvarJogo(); voltarAoMapa();
+              state.party.push(novo); salvarJogo(); voltarAoMapa();
             } }
-        ]
-      );
+        ]);
     }, 800);
   } else {
     setTimeout(voltarAoMapa, 1400);

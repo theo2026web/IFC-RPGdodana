@@ -1,0 +1,44 @@
+/* v7 — Cleber Octopus arena especial */
+.battle-scene[data-bg="boss"] {
+  background:
+    radial-gradient(ellipse at center, rgba(200, 16, 46, 0.35) 0%, transparent 70%),
+    repeating-linear-gradient(45deg, #1a0008 0 14px, #2a0010 14px 28px) !important;
+  background-color: #1a0008 !important;
+  animation: bossArenaPulse 3s steps(8) infinite;
+}
+@keyframes bossArenaPulse {
+  0%, 100% { box-shadow: inset 0 0 60px rgba(200, 16, 46, 0.4); }
+  50%      { box-shadow: inset 0 0 90px rgba(200, 16, 46, 0.7); }
+}
+
+/* Boss combatant card destaque */
+.combatant.is-enemy[data-uid^="cleber_octopus"] {
+  border: 4px solid var(--accent) !important;
+  background: rgba(60, 0, 12, 0.85) !important;
+  box-shadow: 6px 6px 0 var(--shadow), 0 0 22px rgba(200, 16, 46, 0.7) !important;
+  animation: bossCardGlow 1.6s steps(4) infinite;
+  transform: scale(1.15);
+}
+@keyframes bossCardGlow {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.25); }
+}
+.combatant.is-enemy[data-uid^="cleber_octopus"] .sprite-box {
+  width: 128px !important;
+  height: 128px !important;
+}
+.combatant.is-enemy[data-uid^="cleber_octopus"] .char-name {
+  color: var(--accent) !important;
+  text-shadow: 0 0 4px var(--accent);
+  font-size: 13px !important;
+}
+
+/* Boss card no mapa */
+.location-card.boss-card {
+  min-height: 220px !important;
+  font-weight: bold;
+}
+.location-card.boss-card .loc-icon {
+  font-size: 48px !important;
+  text-shadow: 0 0 12px var(--accent);
+}

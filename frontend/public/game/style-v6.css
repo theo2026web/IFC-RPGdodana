@@ -1,0 +1,18 @@
+/* v6 — fix card heights and unlocked card visual */
+.silhouette-grid { flex: 0 1 auto !important; align-content: start; }
+.silhouette-card { min-height: auto !important; max-width: 260px; margin: 0 auto; padding: 18px !important; }
+#screen-location { justify-content: flex-start; }
+
+/* Local desbloqueado normal = verde, hover = vermelho */
+.location-card:not(.locked):not(.boss-card) {
+  border-color: var(--accent-2) !important;
+}
+.location-card:not(.locked):not(.boss-card) h3 { color: var(--accent-2) !important; }
+.location-card:not(.locked):not(.boss-card):hover { border-color: var(--accent) !important; }
+.location-card:not(.locked):not(.boss-card):hover h3 { color: var(--accent) !important; }
+
+.map-grid { align-content: start; }
+.location-card { min-height: 200px; max-height: 260px; }
+
+/* Botão voltar do local mais discreto */
+#btn-back-map { max-width: 280px; margin: 12px auto 0; }

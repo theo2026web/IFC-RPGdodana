@@ -1,0 +1,21 @@
+/* v5 — finite progression, boss, end screen, IFC palette */
+:root {
+  --accent: #C8102E !important;
+  --accent-2: #009A3E !important;
+  --border: #009A3E !important;
+}
+.silhouette-card.defeated { opacity: 0.4; cursor: not-allowed; }
+.silhouette-card.defeated::after { content: "✓"; position:absolute; top:6px; right:8px; color: var(--accent-2); font-size:22px; }
+.silhouette-card { position: relative; }
+.all-cleared { grid-column: 1/-1; text-align:center; padding:14px; color: var(--accent-2); font-family:'Press Start 2P', monospace; font-size:14px; }
+.location-card.locked { opacity: 0.45; cursor: not-allowed; filter: grayscale(0.6); }
+.location-card.boss-card { border-color: var(--accent) !important; background: linear-gradient(135deg, rgba(200,16,46,0.2), rgba(0,154,62,0.1)) !important; animation: bossGlow 1.8s steps(4) infinite; }
+@keyframes bossGlow { 0%,100% { box-shadow: 6px 6px 0 var(--shadow); } 50% { box-shadow: 6px 6px 0 var(--shadow), 0 0 18px var(--accent); } }
+.location-card.boss-card h3 { color: var(--accent) !important; }
+
+#screen-final { align-items: center; justify-content: center; }
+.final-frame { text-align: center; padding: 32px; border: 4px solid var(--accent-2); background: var(--bg-mid); box-shadow: 8px 8px 0 var(--shadow); max-width: 640px; width: 92%; }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 24px 0; text-align: left; font-size: 18px; }
+.stats-grid > div { background: var(--bg-soft); padding: 10px; border: 2px solid var(--accent-2); }
+.stats-grid strong { color: var(--accent-2); font-family: 'Press Start 2P', monospace; font-size: 10px; display: block; margin-bottom: 4px; }
+@media (max-width: 720px) { .stats-grid { grid-template-columns: 1fr; } }

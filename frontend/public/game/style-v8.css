@@ -1,0 +1,103 @@
+/* v8 — Boss intro dialog + final screen polish */
+#boss-intro {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(40, 0, 16, 0.97) 0%, rgba(10, 0, 6, 1) 100%);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 500;
+  animation: bossFadeIn 0.6s steps(8);
+}
+#boss-intro.active { display: flex; }
+@keyframes bossFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.boss-intro-frame {
+  text-align: center;
+  max-width: 640px;
+  width: 92%;
+  padding: 28px;
+  border: 4px solid var(--accent);
+  background: rgba(20, 0, 8, 0.95);
+  box-shadow: 8px 8px 0 var(--shadow), 0 0 32px rgba(200, 16, 46, 0.6);
+  animation: bossFramePulse 2.4s steps(6) infinite;
+}
+@keyframes bossFramePulse {
+  0%, 100% { box-shadow: 8px 8px 0 var(--shadow), 0 0 32px rgba(200, 16, 46, 0.55); }
+  50%      { box-shadow: 8px 8px 0 var(--shadow), 0 0 64px rgba(200, 16, 46, 0.85); }
+}
+
+.boss-portrait {
+  width: 220px;
+  height: 220px;
+  margin: 0 auto 14px;
+  border: 4px solid var(--accent);
+  background: #000;
+  box-shadow: 0 0 24px rgba(200, 16, 46, 0.7);
+  overflow: hidden;
+  animation: bossFloat 3.6s steps(8) infinite;
+}
+.boss-portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  image-rendering: pixelated;
+}
+@keyframes bossFloat {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-6px); }
+}
+
+.boss-name {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 24px;
+  color: var(--accent);
+  text-shadow: 3px 3px 0 var(--shadow), 0 0 12px var(--accent);
+  margin-bottom: 8px;
+  letter-spacing: 3px;
+}
+
+.boss-title {
+  font-size: 18px;
+  color: var(--accent-2);
+  margin-bottom: 22px;
+  font-style: italic;
+}
+
+.boss-dialog {
+  font-size: 22px;
+  color: var(--ink);
+  margin: 16px 0 24px;
+  min-height: 60px;
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.6);
+  border-left: 4px solid var(--accent);
+  border-right: 4px solid var(--accent);
+  font-style: italic;
+  letter-spacing: 1px;
+}
+
+/* Final screen melhorado */
+#screen-final {
+  background:
+    radial-gradient(ellipse at center, rgba(0, 154, 62, 0.18) 0%, transparent 70%),
+    var(--bg-deep);
+}
+.final-frame {
+  position: relative;
+  animation: finalPop 0.8s steps(8);
+}
+@keyframes finalPop {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+.final-frame .title-main {
+  font-size: 48px;
+  text-shadow: 4px 4px 0 var(--shadow), 8px 8px 0 var(--accent-2) !important;
+  animation: finalGlow 2s steps(6) infinite;
+}
+@keyframes finalGlow {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.4); }
+}
