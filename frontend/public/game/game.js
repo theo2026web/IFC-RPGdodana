@@ -1462,30 +1462,49 @@ function irParaLocacao(loc) {
   const grid = document.getElementById("silhouette-grid");
   grid.innerHTML = "";
 
-  // Exclui inimigos recém-derrotados (últimos 3 ids)
-  const recentes = state.derrotados.slice(-3);
-  let candidatos = loc.inimigosPossiveis
-    .map(id => getPersonagem(id))
-    .filter(p => p && !recentes.includes(p.id));
-  if (candidatos.length === 0) {
-    candidatos = loc.inimigosPossiveis.map(id => getPersonagem(id)).filter(p => p);
+  // Inicializa duelos do local APENAS na primeira visita; mantém estado vencido entre revisitas
+  if (!state.batalhasPorLocal[loc.id]) {
+    const candidatos = loc.inimigosPossiveis.map(id => getPersonagem(id)).filter(p => p);
+    const grupos = [];
+    for (let g = 0; g < 3; g++) {
+      const tamanho = rand(1, Math.min(3, state.party.length + 1));
+      const embaralhados = [...candidatos].sort(() => Math.random() - 0.5);
+      grupos.push({ ids: embaralhados.slice(0, tamanho).map(p => p.id), vencido: false });
+    }
+    state.batalhasPorLocal[loc.id] = grupos;
+    salvarJogo();
   }
 
-  const numGrupos = Math.min(3, candidatos.length);
-  for (let g = 0; g < numGrupos; g++) {
-    const tamanhoGrupo = rand(1, Math.min(3, state.party.length + 1));
-    const embaralhados = [...candidatos].sort(() => Math.random() - 0.5);
-    const grupo = embaralhados.slice(0, tamanhoGrupo);
+  const grupos = state.batalhasPorLocal[loc.id];
+  const todosVencidos = grupos.every(g => g.vencido);
+
+  grupos.forEach((grupo, idx) => {
     const card = document.createElement("div");
-    card.className = "silhouette-card";
-    card.setAttribute("data-testid", `silhouette-${g}`);
-    const silsHtml = grupo.map(() => `<div class="silhouette-box small-sil"></div>`).join("");
+    card.className = "silhouette-card" + (grupo.vencido ? " defeated" : "");
+    card.setAttribute("data-testid", `silhouette-${idx}`);
+    const silsHtml = grupo.ids.map(() => `<div class="silhouette-box small-sil"></div>`).join("");
     card.innerHTML = `
       <div class="silhouette-row">${silsHtml}</div>
-      <div class="sil-label">${tamanhoGrupo === 1 ? "1 oponente" : `${tamanhoGrupo} oponentes`}</div>
+      <div class="sil-label">${grupo.vencido ? "✓ Derrotado" : (grupo.ids.length === 1 ? "1 oponente" : `${grupo.ids.length} oponentes`)}</div>
     `;
-    card.onclick = () => { SFX.menu(); iniciarBatalha(grupo, loc); };
+    if (!grupo.vencido) {
+      card.onclick = () => {
+        SFX.menu();
+        const grupoChars = grupo.ids.map(id => getPersonagem(id));
+        state.batalha_grupo_idx = idx;
+        iniciarBatalha(grupoChars, loc);
+      };
+    } else {
+      card.style.pointerEvents = "none";
+    }
     grid.appendChild(card);
+  });
+
+  if (todosVencidos) {
+    const aviso = document.createElement("div");
+    aviso.className = "all-cleared";
+    aviso.innerHTML = `<strong>✓ Local Conquistado!</strong>`;
+    grid.appendChild(aviso);
   }
 
   document.getElementById("btn-back-map").onclick = () => { SFX.menu(); mostrarTela("screen-map"); };
@@ -1518,6 +1537,7 @@ function iniciarBatalha(inimigosBases, loc) {
   };
 
   document.getElementById("battle-scene").setAttribute("data-bg", loc.bg);
+  document.body.classList.toggle("boss-fight", loc.bg === "boss");
   renderBatalha();
   log(`Você encontrou ${inimigos.map(i => i.nome).join(", ")} em ${loc.nome}!`, "system");
   log(`Hora da batalha!`, "system");
@@ -2198,6 +2218,7 @@ function finalizarDerrota() {
 }
 
 function voltarAoMapa() {
+  document.body.classList.remove("boss-fight");
   // Cura leve (20%) na party em campo
   const b = state.batalha;
   if (b) {

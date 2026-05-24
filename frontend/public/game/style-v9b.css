@@ -1,0 +1,43 @@
+/* v9b — fallback usando body.boss-fight ao invés de :has() */
+body.boss-fight .battle-ui {
+  background: linear-gradient(180deg, #1a0008 0%, #2a0012 100%) !important;
+  border-top: 4px solid var(--accent) !important;
+}
+body.boss-fight .battle-log {
+  background: rgba(40, 0, 12, 0.85) !important;
+  border-color: var(--accent) !important;
+  color: #ffd0d0;
+}
+body.boss-fight .menu-btn {
+  background: rgba(80, 0, 16, 0.9) !important;
+  border-color: var(--accent) !important;
+  color: var(--ink) !important;
+  box-shadow: 4px 4px 0 #000, 0 0 8px rgba(200, 16, 46, 0.6) !important;
+}
+body.boss-fight .menu-btn:hover { background: var(--accent) !important; color: #fff !important; }
+body.boss-fight .battle-submenu,
+body.boss-fight .battle-target { background: rgba(40, 0, 12, 0.92) !important; border-color: var(--accent) !important; }
+body.boss-fight .submenu-item {
+  background: rgba(60, 0, 20, 0.9) !important;
+  border-color: var(--accent) !important; color: #ffe0e0;
+}
+body.boss-fight .submenu-item .sub-title { color: #ff8080 !important; }
+body.boss-fight .submenu-item:hover { background: var(--accent) !important; }
+body.boss-fight .submenu-item:hover .sub-title,
+body.boss-fight .submenu-item:hover .sub-desc { color: #fff !important; }
+body.boss-fight .submenu-item .tag { color: #ff8080 !important; border-color: var(--accent) !important; }
+body.boss-fight .target-card { background: rgba(60, 0, 20, 0.9) !important; border-color: var(--accent) !important; }
+body.boss-fight .target-card:hover { background: var(--accent) !important; }
+body.boss-fight .target-card strong { color: #ff8080 !important; }
+body.boss-fight .target-header { color: #ff6060 !important; }
+body.boss-fight .battle-log .log-line { border-bottom-color: rgba(200, 16, 46, 0.3); }
+body.boss-fight .battle-log .log-line.system { color: #ff8080 !important; }
+body.boss-fight .battle-log .log-line.crit { color: #ffff00 !important; text-shadow: 0 0 4px var(--accent); }
+body.boss-fight .combatant.is-player {
+  background: rgba(40, 0, 12, 0.6) !important;
+  border-color: #ff8080 !important;
+}
+body.boss-fight .combatant.is-player.active-turn {
+  box-shadow: 4px 10px 0 var(--accent) !important;
+  background: rgba(200, 16, 46, 0.18) !important;
+}

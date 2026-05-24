@@ -1,0 +1,91 @@
+/* v9 — Boss fight: tudo vermelho */
+
+/* Quando há um boss ativo, tinge tudo da UI de batalha de vermelho */
+.battle-scene[data-bg="boss"] ~ .battle-ui,
+body:has(.battle-scene[data-bg="boss"]) .battle-ui {
+  background: linear-gradient(180deg, #1a0008 0%, #2a0012 100%) !important;
+  border-top: 4px solid var(--accent) !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .battle-log {
+  background: rgba(40, 0, 12, 0.85) !important;
+  border-color: var(--accent) !important;
+  color: #ffd0d0;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .menu-btn {
+  background: rgba(80, 0, 16, 0.9) !important;
+  border-color: var(--accent) !important;
+  color: var(--ink) !important;
+  box-shadow: 4px 4px 0 #000, 0 0 8px rgba(200, 16, 46, 0.6) !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .menu-btn:hover {
+  background: var(--accent) !important;
+  color: #fff !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .battle-submenu,
+body:has(.battle-scene[data-bg="boss"]) .battle-target {
+  background: rgba(40, 0, 12, 0.92) !important;
+  border-color: var(--accent) !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .submenu-item {
+  background: rgba(60, 0, 20, 0.9) !important;
+  border-color: var(--accent) !important;
+  color: #ffe0e0;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .submenu-item .sub-title {
+  color: #ff8080 !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .submenu-item:hover {
+  background: var(--accent) !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .submenu-item:hover .sub-title,
+body:has(.battle-scene[data-bg="boss"]) .submenu-item:hover .sub-desc {
+  color: #fff !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .submenu-item .tag {
+  color: #ff8080 !important;
+  border-color: var(--accent) !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .target-card {
+  background: rgba(60, 0, 20, 0.9) !important;
+  border-color: var(--accent) !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .target-card:hover {
+  background: var(--accent) !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .target-card strong {
+  color: #ff8080 !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .target-header {
+  color: #ff6060 !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .battle-log .log-line {
+  border-bottom-color: rgba(200, 16, 46, 0.3);
+}
+
+body:has(.battle-scene[data-bg="boss"]) .battle-log .log-line.system { color: #ff8080 !important; }
+body:has(.battle-scene[data-bg="boss"]) .battle-log .log-line.crit { color: #ffff00 !important; text-shadow: 0 0 4px var(--accent); }
+
+/* Player card também tinge no fundo vermelho */
+body:has(.battle-scene[data-bg="boss"]) .combatant.is-player {
+  background: rgba(40, 0, 12, 0.6) !important;
+  border-color: #ff8080 !important;
+}
+
+body:has(.battle-scene[data-bg="boss"]) .combatant.is-player.active-turn {
+  box-shadow: 4px 10px 0 var(--accent) !important;
+  background: rgba(200, 16, 46, 0.18) !important;
+}
