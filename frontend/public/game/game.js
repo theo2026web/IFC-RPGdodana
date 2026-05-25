@@ -963,7 +963,7 @@ const LOCAIS = [
     icone: "C",
     descricao: "Cafofo, um lugar para descansar,comer e jogar Coup",
     desbloqueioVitorias: 2,
-    inimigosPossiveis: ["mello", "dg", "bia", "luna", "theo", "ruivo", "baixa_memoria"]
+    inimigosPossiveis: ["mello", "dg", "bia", "authentic", "theo", "ruivo", "baixa_memoria"]
   },
   {
     id: "quadra",
@@ -990,7 +990,7 @@ const LOCAIS = [
     icone: "O",
     descricao: "Cuidado por onde anda...",
     desbloqueioVitorias: 9,
-    inimigosPossiveis: ["thiaguinho", "jardel", "puskas", "dana", "luna", "edukoff", "moraes", "nicolas", "joedio"]
+    inimigosPossiveis: ["thiaguinho", "jardel", "puskas", "dana", "authentic", "edukoff", "moraes", "nicolas", "joedio"]
   }
 ];
 
@@ -1109,7 +1109,7 @@ const PERSONAGENS = [
     id: "thiaguinho",
     nome: "Thiaguinho",
     estereotipo: "Estranho",
-    sprite: "assets/kevin.png",
+    sprite: "assets/tiaguinho.png",
     cor: "#5a189a",
     hpBase: 78,
     focoBase: 55,
@@ -1124,7 +1124,7 @@ const PERSONAGENS = [
     id: "lorenzo",
     nome: "Lorenzo",
     estereotipo: "Gamer",
-    sprite: "assets/leo.png",
+    sprite: "assets/lorenzo.png",
     cor: "#00b4d8",
     hpBase: 72,
     focoBase: 60,
@@ -1136,10 +1136,10 @@ const PERSONAGENS = [
   },
 
   {
-    id: "luna",
-    nome: "Luna",
+    id: "authentic",
+    nome: "Authentic",
     estereotipo: "Gente Fina",
-    sprite: "assets/luna.png",
+    sprite: "assets/authentic.png",
     cor: "#90e0ef",
     hpBase: 82,
     focoBase: 60,
@@ -1154,7 +1154,7 @@ const PERSONAGENS = [
     id: "max",
     nome: "Max",
     estereotipo: "Nerd",
-    sprite: "assets/davi.png",
+    sprite: "assets/max.png",
     cor: "#48cae4",
     hpBase: 68,
     focoBase: 72,
@@ -1169,7 +1169,7 @@ const PERSONAGENS = [
     id: "theo",
     nome: "Theo",
     estereotipo: "Valentão",
-    sprite: "assets/bruno.png",
+    sprite: "assets/theo.png",
     cor: "#e63946",
     hpBase: 100,
     focoBase: 32,
@@ -1184,7 +1184,7 @@ const PERSONAGENS = [
     id: "antony",
     nome: "Antony",
     estereotipo: "Atleta",
-    sprite: "assets/ana.png",
+    sprite: "assets/antony.png",
     cor: "#52b788",
     hpBase: 92,
     focoBase: 42,
@@ -1289,7 +1289,7 @@ const PERSONAGENS = [
     id: "baixa_memoria",
     nome: "Baixa Memoria",
     estereotipo: "Gente Fina",
-    sprite: "assets/mari.png",
+    sprite: "assets/baixa.png",
     cor: "#ade8f4",
     hpBase: 84,
     focoBase: 58,
@@ -1374,7 +1374,9 @@ function instanciarPersonagem(base, nivel = 1) {
     ataques: ataquesIniciais.length > 0 ? ataquesIniciais : ["soco_basico"],
     buffAtk: 0,
     condicoes: [],
-    cooldowns: {}
+    cooldowns: {},
+    healCooldown: 0,
+    healChain: 0
   };
 }
 
@@ -1441,7 +1443,92 @@ const SFX = {
   menu()     { this.playOrBeep("menu",     () => this.beep(880, 0.04, "square", 0.05)); },
   victory()  { this.playOrBeep("victory",  () => { [523,659,784,1047].forEach((f,i)=>setTimeout(()=>this.beep(f,0.15,"triangle"), i*120)); }); },
   defeat()   { this.playOrBeep("defeat",   () => { [392,330,262,196].forEach((f,i)=>setTimeout(()=>this.beep(f,0.20,"sawtooth"), i*150)); }); },
-  levelUp()  { this.playOrBeep("levelup",  () => { [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>this.beep(f,0.10,"square"), i*80)); }); }
+  levelUp()  { this.playOrBeep("levelup",  () => { [523,659,784,1047,1319].forEach((f,i)=>setTimeout(()=>this.beep(f,0.10,"square"), i*80)); }); },
+
+  bossMusic: {
+    interval: null,
+    audio: null,
+    pattern: [220, 247, 262, 294, 330, 294, 262, 247],
+    voiceCount: 2,
+    nodes: []
+  },
+
+  startBossMusic() {
+    if (!state.somAtivo) return;
+    this.init();
+    if (!this.ctx) return;
+    this.stopBossMusic();
+
+    const playGenerated = () => {
+      let idx = 0;
+      const pattern = this.bossMusic.pattern;
+      const playNote = (freq, duration, type, volume) => {
+        const t = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(volume, t);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
+        osc.connect(gain).connect(this.ctx.destination);
+        osc.start(t);
+        osc.stop(t + duration);
+        this.bossMusic.nodes.push(osc);
+        this.bossMusic.nodes.push(gain);
+      };
+
+      this.bossMusic.interval = setInterval(() => {
+        const freq = pattern[idx % pattern.length];
+        playNote(freq, 0.18, "square", 0.06);
+        playNote(freq * 1.5, 0.14, "triangle", 0.03);
+        idx++;
+      }, 220);
+    };
+
+    const audioName = "boss";
+    if (this.cache[audioName] === false) {
+      playGenerated();
+      return;
+    }
+    if (this.cache[audioName]) {
+      const audio = this.cache[audioName];
+      audio.loop = true;
+      try { audio.currentTime = 0; audio.play(); } catch(e) { playGenerated(); }
+      this.bossMusic.audio = audio;
+      return;
+    }
+
+    const audio = new Audio(`assets/sfx/${audioName}.mp3`);
+    audio.volume = 0.4;
+    audio.loop = true;
+    audio.addEventListener("canplaythrough", () => {
+      this.cache[audioName] = audio;
+      this.bossMusic.audio = audio;
+      try { audio.play(); } catch(e) { playGenerated(); }
+    }, { once: true });
+    audio.addEventListener("error", () => {
+      this.cache[audioName] = false;
+      playGenerated();
+    }, { once: true });
+  },
+
+  stopBossMusic() {
+    if (this.bossMusic.interval) {
+      clearInterval(this.bossMusic.interval);
+      this.bossMusic.interval = null;
+    }
+    if (this.bossMusic.audio) {
+      try { this.bossMusic.audio.pause(); this.bossMusic.audio.currentTime = 0; } catch(e) {}
+      this.bossMusic.audio = null;
+    }
+    if (this.bossMusic.nodes.length > 0) {
+      this.bossMusic.nodes.forEach(node => {
+        try { if (node.stop) node.stop(); } catch(e) {}
+        try { if (node.disconnect) node.disconnect(); } catch(e) {}
+      });
+      this.bossMusic.nodes = [];
+    }
+  }
 };
 
 
@@ -1454,6 +1541,10 @@ function gerarSpritePixel(personagem, tamanho = 96) {
   canvas.className = "pixel-sprite";
   canvas.style.width = tamanho + "px";
   canvas.style.height = tamanho + "px";
+  canvas.style.minWidth = tamanho + "px";
+  canvas.style.minHeight = tamanho + "px";
+  canvas.style.maxWidth = tamanho + "px";
+  canvas.style.maxHeight = tamanho + "px";
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0, 0, 16, 16);
 
@@ -1533,8 +1624,11 @@ function montarSprite(targetEl, personagem) {
     if (!spriteSources.includes(spriteFromId)) spriteSources.push(spriteFromId);
   }
 
+  const spriteSize = personagem.id === "cleber_octopus" ? 128 : 96;
+  targetEl.style.width = spriteSize + "px";
+  targetEl.style.height = spriteSize + "px";
   if (spriteSources.length === 0) {
-    targetEl.appendChild(gerarSpritePixel(personagem, targetEl.clientWidth));
+    targetEl.appendChild(gerarSpritePixel(personagem, spriteSize));
     return;
   }
 
@@ -1551,7 +1645,13 @@ function montarSprite(targetEl, personagem) {
     }
 
     const img = new Image();
-    img.onload = () => { targetEl.innerHTML = ""; targetEl.appendChild(img); };
+    img.onload = () => {
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.objectFit = "contain";
+      targetEl.innerHTML = "";
+      targetEl.appendChild(img);
+    };
     img.onerror = () => { tentarCarregar(index + 1); };
     img.alt = personagem.nome;
     img.src = spriteSources[index];
@@ -1844,7 +1944,7 @@ function irParaLocacao(loc) {
     const grupos = [];
     // Garante VARIEDADE: cada grupo sorteia personagens diferentes entre si
     for (let g = 0; g < 3; g++) {
-      const tamanho = rand(1, Math.min(3, state.party.length + 1));
+      const tamanho = loc.id === "hall" ? 1 : rand(1, Math.min(3, state.party.length + 1));
       const pool = [...candidatos].sort(() => Math.random() - 0.5);
       const escolhidos = [];
       const usados = new Set();
@@ -1862,6 +1962,19 @@ function irParaLocacao(loc) {
   }
 
   const grupos = state.batalhasPorLocal[loc.id];
+  const garantidos = grupos.filter(g => g.recruitGarantido);
+  if (garantidos.length !== 1) {
+    grupos.forEach(g => delete g.recruitGarantido);
+    const candidatosElegiveis = grupos
+      .filter(gr => !gr.vencido)
+      .map(gr => ({ gr, ids: gr.ids.filter(id => !state.party.some(p => p.id === id) && id !== "cleber_octopus") }))
+      .filter(entry => entry.ids.length > 0);
+    if (candidatosElegiveis.length > 0) {
+      candidatosElegiveis[rand(0, candidatosElegiveis.length - 1)].gr.recruitGarantido = true;
+      salvarJogo();
+    }
+  }
+
   const todosVencidos = grupos.every(g => g.vencido);
 
   grupos.forEach((grupo, idx) => {
@@ -1924,6 +2037,8 @@ function iniciarBatalha(inimigosBases, loc) {
 
   document.getElementById("battle-scene").setAttribute("data-bg", loc.bg);
   document.body.classList.toggle("boss-fight", loc.bg === "boss");
+  if (loc.bg === "boss") SFX.startBossMusic();
+  else SFX.stopBossMusic();
   renderBatalha();
   log(`Você encontrou ${inimigos.map(i => i.nome).join(", ")} em ${loc.nome}!`, "system");
   log(`Hora da batalha!`, "system");
@@ -1977,6 +2092,7 @@ function criarCardCombatente(c, idx, lado) {
   const fraco = DESVANTAGENS[c.estereotipo];
 
   const hasFoco = lado === "player";
+  const spriteSize = c.id === "cleber_octopus" ? 128 : 96;
   const barsHtml = `
     <div class="bar hp"><div class="bar-fill" style="width:${(c.hp/c.hpMax)*100}%"></div><span class="bar-label">${c.hp}/${c.hpMax}</span></div>
     ${hasFoco ? `<div class="bar mp"><div class="bar-fill" style="width:${(c.foco/c.focoMax)*100}%"></div><span class="bar-label">${c.foco}/${c.focoMax}</span></div>` : ""}
@@ -1984,7 +2100,7 @@ function criarCardCombatente(c, idx, lado) {
 
   wrap.innerHTML = `
     <div class="class-badge" style="background:${estilo.cor}" title="${c.estereotipo}">${estilo.icone}</div>
-    <div class="sprite-box battle-sprite"></div>
+    <div class="sprite-box battle-sprite" style="width:${spriteSize}px;height:${spriteSize}px;"></div>
     <div class="combatant-info">
       <div class="char-name">${c.nome} Nv${c.nivel}</div>
       <div class="char-stereo" style="color:${estilo.cor}">${c.estereotipo}</div>
@@ -2066,9 +2182,11 @@ function proximoTurno() {
 }
 
 function checarPerderTurno(c) {
+  if (c.id === "cleber_octopus") return false;
   for (const cd of c.condicoes) {
     const def = getCondicao(cd.id);
     if (def.chancePerderTurno && Math.random() < def.chancePerderTurno) {
+      c.healChain = 0;
       log(`${c.nome} está ${def.nome} e perdeu o turno!`, "weak");
       return true;
     }
@@ -2085,6 +2203,9 @@ function processarCondicoesTurno(combatentes) {
         c.cooldowns[k] = Math.max(0, c.cooldowns[k] - 1);
         if (c.cooldowns[k] === 0) delete c.cooldowns[k];
       });
+    }
+    if (c.healCooldown > 0) {
+      c.healCooldown = Math.max(0, c.healCooldown - 1);
     }
     const novas = [];
     c.condicoes.forEach(cd => {
@@ -2140,7 +2261,7 @@ function abrirSubmenuAtaques() {
     const a = getAtaque(aid);
     if (!a) return;
     const item = document.createElement("div");
-    const disabled = ator.foco < a.custoFoco;
+    const disabled = ator.foco < a.custoFoco || (ator.cooldowns && ator.cooldowns[a.id] > 0) || (a.tipoAcao === "cura" && ator.healCooldown > 0);
     item.className = "submenu-item" + (disabled ? " disabled" : "");
     item.setAttribute("data-testid", `atk-${a.id}`);
     const tagTipo = ({
@@ -2336,10 +2457,20 @@ function aplicarEfeitos(usuario, alvo, ataque) {
 
 /* ---------- EXECUTAR AÇÃO ---------- */
 function executarAcao(ator, ataque, alvos) {
+  if (ataque.tipoAcao === "cura" && ator.healCooldown > 0) {
+    log(`${ator.nome} não pode usar ${ataque.nome} ainda.`, "weak");
+    return;
+  }
   if (ataque.custoFoco > 0) ator.foco = Math.max(0, ator.foco - ataque.custoFoco);
   state.stats.acoesUsadas[ataque.id] = (state.stats.acoesUsadas[ataque.id] || 0) + 1;
-  // Cooldown em cura/buff: 1 turno de bloqueio após uso
-  if (ataque.tipoAcao === "cura" || ataque.tipoAcao === "buff") {
+  if (ataque.tipoAcao === "cura") {
+    ator.healCooldown = ator.healChain > 0 ? 2 : 1;
+    ator.healChain = Math.min(2, ator.healChain + 1);
+  } else {
+    ator.healChain = 0;
+  }
+  // Cooldown em buff: 1 turno de bloqueio após uso
+  if (ataque.tipoAcao === "buff") {
     if (!ator.cooldowns) ator.cooldowns = {};
     ator.cooldowns[ataque.id] = 2;
   }
@@ -2398,6 +2529,7 @@ function executarAcao(ator, ataque, alvos) {
 }
 
 function usarItem(ator, item, alvo) {
+  ator.healChain = 0;
   log(`${ator.nome} usou ${item.nome} em ${alvo.nome}.`, "system");
   if (item.tipo === "cura_hp") {
     if (item.alvo === "todos_aliados") {
@@ -2461,6 +2593,7 @@ function usarItem(ator, item, alvo) {
 function trocarPorReserva(reserva) {
   const b = state.batalha;
   const ator = getAtorAtual();
+  ator.healChain = 0;
   const idx = b.partyEmCampo.indexOf(ator);
   b.partyEmCampo[idx] = reserva;
   log(`${ator.nome} sai. ${reserva.nome} entra em campo!`, "system");
@@ -2470,6 +2603,8 @@ function trocarPorReserva(reserva) {
 
 function tentarFugir() {
   const b = state.batalha;
+  const ator = getAtorAtual();
+  ator.healChain = 0;
   if (b.fugindo) return;
   b.fugindo = true;
   if (Math.random() < 0.55) {
@@ -2497,7 +2632,7 @@ function turnoIA(inimigo) {
   const b = state.batalha;
   if (!inimigo.cooldowns) inimigo.cooldowns = {};
   const acoesPossiveis = inimigo.ataques.map(id => getAtaque(id)).filter(a =>
-    a && inimigo.foco >= a.custoFoco && !(inimigo.cooldowns[a.id] > 0));
+    a && inimigo.foco >= a.custoFoco && !(inimigo.cooldowns && inimigo.cooldowns[a.id] > 0) && !(a.tipoAcao === "cura" && inimigo.healCooldown > 0));
   const escolhido = acoesPossiveis.length > 0
     ? acoesPossiveis[rand(0, acoesPossiveis.length - 1)]
     : getAtaque("soco_basico");
@@ -2519,8 +2654,17 @@ function turnoIA(inimigo) {
 }
 
 function executarAcaoIA(ator, ataque, alvos) {
+  if (ataque.tipoAcao === "cura" && ator.healCooldown > 0) {
+    ataque = getAtaque("soco_basico");
+  }
   if (ataque.custoFoco > 0) ator.foco = Math.max(0, ator.foco - ataque.custoFoco);
-  if (ataque.tipoAcao === "cura" || ataque.tipoAcao === "buff") {
+  if (ataque.tipoAcao === "cura") {
+    ator.healCooldown = ator.healChain > 0 ? 2 : 1;
+    ator.healChain = Math.min(2, ator.healChain + 1);
+  } else {
+    ator.healChain = 0;
+  }
+  if (ataque.tipoAcao === "buff") {
     if (!ator.cooldowns) ator.cooldowns = {};
     ator.cooldowns[ataque.id] = 2;
   }
@@ -2573,6 +2717,7 @@ function finalizarVitoria() {
   if (b.inimigos.some(i => i.id === "cleber_octopus")) {
     state.bossDerrotado = true;
   }
+  SFX.stopBossMusic();
 
   const xpTotal = b.inimigos.reduce((s, i) => s + (20 + i.nivel * 10), 0);
   const vivos = b.partyEmCampo.filter(p => p.hp > 0);
@@ -2596,9 +2741,13 @@ function finalizarVitoria() {
   }
 
   const podeRecrutar = state.party.length < 6;
+  const grupoLocal = b.local && b.grupoIdx !== undefined && state.batalhasPorLocal[b.local.id]
+    ? state.batalhasPorLocal[b.local.id][b.grupoIdx]
+    : null;
+  const recrutamentoGarantido = !!(grupoLocal && grupoLocal.recruitGarantido);
   const candidato = podeRecrutar ? b.inimigosBaseIds.find(id => !state.party.some(p => p.id === id) && id !== "cleber_octopus") : null;
 
-  if (candidato && Math.random() < 0.4) {
+  if (candidato && (recrutamentoGarantido || Math.random() < 0.25)) {
     const base = getPersonagem(candidato);
     setTimeout(() => {
       abrirModal("Recrutar aluno?",
@@ -2640,6 +2789,7 @@ function ganharXp(p, xp) {
 
 function finalizarDerrota() {
   state.batalha.acabou = true;
+  SFX.stopBossMusic();
   SFX.defeat();
   log("Sua party foi derrotada...", "weak");
   setTimeout(() => {
@@ -2655,6 +2805,7 @@ function finalizarDerrota() {
 
 function voltarAoMapa() {
   document.body.classList.remove("boss-fight");
+  SFX.stopBossMusic();
   // Cura leve (20%) na party em campo
   const b = state.batalha;
   if (b) {
