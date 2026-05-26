@@ -36,6 +36,22 @@
 .party-actions button { width: 44px; min-width: 44px; padding: 8px !important; font-size: 14px !important; }
 .party-actions button:disabled { opacity: 0.3; cursor: not-allowed; }
 
+/* Battle combatant layout fix */
+.enemy-area, .player-area {
+  align-items: stretch;
+}
+.combatant {
+  min-width: 180px;
+  min-height: 250px;
+  align-items: center;
+  justify-content: flex-start;
+}
+.combatant .sprite-box.battle-sprite {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto;
+}
+
 .party-inventory {
   background: var(--bg-mid);
   border: 3px solid var(--accent-2);
@@ -57,3 +73,54 @@
   .party-list .party-row { grid-template-columns: 1fr; text-align: center; }
   .party-actions { flex-direction: row; justify-content: center; }
 }
+
+/* Classes screen */
+#screen-classes { padding: 24px; position: relative; }
+#screen-classes .screen-header { max-width: 960px; margin-bottom: 16px; }
+#btn-back-classes { position: absolute; top: 24px; right: 24px; min-width: 160px; padding: 12px 20px; }
+.class-table-container { width: 100%; max-width: 960px; margin: 18px 0 24px 0; }
+.class-table {
+  background: rgba(20, 20, 28, 0.95);
+  border: 3px solid var(--accent-2);
+  box-shadow: 4px 4px 0 var(--shadow);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.class-table-header,
+.class-table-row {
+  display: grid;
+  grid-template-columns: 220px minmax(140px, 1fr) minmax(140px, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 14px 16px;
+}
+.class-table-header {
+  background: rgba(255, 255, 255, 0.08);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 13px;
+}
+.class-table-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 14px;
+}
+.class-cell {
+  text-align: left;
+  justify-self: start;
+}
+.class-cell.class-name {
+  font-family: 'Press Start 2P', monospace;
+}
+.class-cell.class-strong {
+  color: #a5ff8b;
+}
+.class-cell.class-weak {
+  color: #ff8b8b;
+}
+@media (max-width: 720px) {
+  .class-table-header,
+  .class-table-row { grid-template-columns: 1fr; text-align: left; }
+  .class-cell { display: block; }
+}
+
+.cond-badge { cursor: help; }

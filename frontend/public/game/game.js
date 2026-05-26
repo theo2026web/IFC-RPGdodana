@@ -47,7 +47,8 @@ const ESTILO_CLASSE = {
   "Professor":  { cor: "#ff8c42", icone: "📋" },
   "Woke":       { cor: "#9d4edd", icone: "📢" },
   "Estranho":   { cor: "#5a189a", icone: "👁" },
-  "Gente Fina": { cor: "#90e0ef", icone: "💖" }
+  "Gente Fina": { cor: "#90e0ef", icone: "💖" },
+  "Boss":       { cor: "#8b0000", icone: "👹" }
 };
 
 
@@ -454,7 +455,7 @@ const ATAQUES = [
   {
     id: "prova_surpresa",
     nome: "Prova Surpresa",
-    poder: 20,
+    poder: 24,
     custoFoco: 16,
     descricao: "Aplica prova em todos os inimigos. Cansaço garantido.",
     estereotipoDono: "Professor",
@@ -659,7 +660,7 @@ const ATAQUES = [
   {
     id: "tentaculo_caotico",
     nome: "Tentáculo Caótico",
-    poder: 22,
+    poder: 26,
     custoFoco: 10,
     descricao: "Oito tentáculos atingem todos os inimigos com dano e confusão.",
     estereotipoDono: "Professor",
@@ -673,7 +674,7 @@ const ATAQUES = [
   {
     id: "ira_octopus",
     nome: "Ira do Octopus",
-    poder: 38,
+    poder: 46,
     custoFoco: 22,
     descricao: "Dano massivo em alvo único. Causa sangramento.",
     estereotipoDono: "Professor",
@@ -1303,15 +1304,15 @@ const PERSONAGENS = [
   {
     id: "cleber_octopus",
     nome: "Cleber Octopus",
-    estereotipo: "Professor",
+    estereotipo: "Boss",
     sprite: "assets/cleber.png",
     cor: "#8b0000",
-    hpBase: 240,
-    focoBase: 120,
-    ataqueBase: 22,
-    defesaBase: 14,
+    hpBase: 340,
+    focoBase: 160,
+    ataqueBase: 32,
+    defesaBase: 18,
     ataques: ["tentaculo_caotico", "ira_octopus", "prova_surpresa", "advertencia"],
-    descricao: "O professor das sombras. Oito braços, mil broncas.",
+    descricao: "O professor das sombras. Oito braços, mil broncas. Regenera tentáculos a cada turno.",
     isStarter: false,
     isBoss: true
   }
@@ -1352,8 +1353,14 @@ function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
 
 function instanciarPersonagem(base, nivel = 1) {
   const ataquesIniciais = ATAQUES
-    .filter(a => (a.estereotipoDono === base.estereotipo || a.estereotipoDono === "*")
-              && a.nivelMinimo <= nivel)
+    .filter(a => {
+      // Cleber Octopus sempre tem acesso a seus ataques especiais
+      if (base.id === "cleber_octopus" && ["tentaculo_caotico", "ira_octopus", "prova_surpresa", "advertencia"].includes(a.id)) {
+        return true;
+      }
+      return (a.estereotipoDono === base.estereotipo || a.estereotipoDono === "*")
+              && a.nivelMinimo <= nivel;
+    })
     .map(a => a.id);
 
   return {
@@ -1624,7 +1631,9 @@ function montarSprite(targetEl, personagem) {
     if (!spriteSources.includes(spriteFromId)) spriteSources.push(spriteFromId);
   }
 
-  const spriteSize = personagem.id === "cleber_octopus" ? 128 : 96;
+  const spriteSize = targetEl.classList.contains("battle-sprite")
+    ? 88
+    : personagem.id === "cleber_octopus" ? 128 : 96;
   targetEl.style.width = spriteSize + "px";
   targetEl.style.height = spriteSize + "px";
   if (spriteSources.length === 0) {
@@ -1846,6 +1855,27 @@ function renderMapa() {
   renderPlayerStatus();
 }
 
+function renderClasses() {
+  const container = document.getElementById("class-table-container");
+  const classes = Object.keys(VANTAGENS);
+  container.innerHTML = `
+    <div class="class-table">
+      <div class="class-table-header">
+        <div>Classe</div>
+        <div>Vence</div>
+        <div>Perde para</div>
+      </div>
+      ${classes.map(classe => `
+        <div class="class-table-row">
+          <div class="class-cell class-name">${classe}</div>
+          <div class="class-cell class-strong">${VANTAGENS[classe]}</div>
+          <div class="class-cell class-weak">${DESVANTAGENS[classe]}</div>
+        </div>
+      `).join("")}
+    </div>
+  `;
+}
+
 function mostrarDialogoBoss(onFinish) {
   let overlay = document.getElementById("boss-intro");
   if (!overlay) {
@@ -2017,7 +2047,8 @@ function irParaLocacao(loc) {
 function iniciarBatalha(inimigosBases, loc) {
   const nivelMedio = state.party[state.ativo].nivel;
   const inimigos = inimigosBases.map(b => {
-    const nv = Math.max(1, nivelMedio + rand(-1, 1));
+    // Cleber Octopus sempre começa no nível 1
+    const nv = b.id === "cleber_octopus" ? 1 : Math.max(1, nivelMedio + rand(-1, 1));
     return instanciarPersonagem(b, nv);
   });
   const partyEmCampo = state.party.filter(p => p.hp > 0).slice(0, 3);
@@ -2084,7 +2115,7 @@ function criarCardCombatente(c, idx, lado) {
 
   const condBadges = c.condicoes.map(cd => {
     const def = getCondicao(cd.id);
-    return `<span class="cond-badge" style="background:${def.cor}" title="${def.nome} (${cd.turnos})">${def.icone}</span>`;
+    return `<span class="cond-badge" style="background:${def.cor}" title="${def.nome} (${cd.turnos}) - ${def.descricao}">${def.icone}</span>`;
   }).join("");
 
   const estilo = ESTILO_CLASSE[c.estereotipo] || { cor: "#888", icone: "?" };
@@ -2092,23 +2123,27 @@ function criarCardCombatente(c, idx, lado) {
   const fraco = DESVANTAGENS[c.estereotipo];
 
   const hasFoco = lado === "player";
-  const spriteSize = c.id === "cleber_octopus" ? 128 : 96;
   const barsHtml = `
     <div class="bar hp"><div class="bar-fill" style="width:${(c.hp/c.hpMax)*100}%"></div><span class="bar-label">${c.hp}/${c.hpMax}</span></div>
     ${hasFoco ? `<div class="bar mp"><div class="bar-fill" style="width:${(c.foco/c.focoMax)*100}%"></div><span class="bar-label">${c.foco}/${c.focoMax}</span></div>` : ""}
   `;
 
-  wrap.innerHTML = `
-    <div class="class-badge" style="background:${estilo.cor}" title="${c.estereotipo}">${estilo.icone}</div>
-    <div class="sprite-box battle-sprite" style="width:${spriteSize}px;height:${spriteSize}px;"></div>
-    <div class="combatant-info">
-      <div class="char-name">${c.nome} Nv${c.nivel}</div>
-      <div class="char-stereo" style="color:${estilo.cor}">${c.estereotipo}</div>
-      ${barsHtml}
-      <div class="matchup-row">
+  // Boss não mostra vantagens/desvantagens
+  const matchupRow = c.estereotipo === "Boss" 
+    ? "" 
+    : `<div class="matchup-row">
         <span class="mu-strong" title="Forte contra">▲ ${forte}</span>
         <span class="mu-weak" title="Fraco contra">▼ ${fraco}</span>
-      </div>
+      </div>`;
+
+  wrap.innerHTML = `
+    <div class="class-badge" style="background:${estilo.cor}" title="${c.estereotipo}">${estilo.icone}</div>
+    <div class="sprite-box battle-sprite"></div>
+    <div class="combatant-info">
+      <div class="char-name">${c.nome}${c.id !== "cleber_octopus" ? ` Nv${c.nivel}` : ""}</div>
+      <div class="char-stereo" style="color:${estilo.cor}">${c.estereotipo}</div>
+      ${barsHtml}
+      ${matchupRow}
       <div class="cond-row">${condBadges}</div>
     </div>
   `;
@@ -2206,6 +2241,16 @@ function processarCondicoesTurno(combatentes) {
     }
     if (c.healCooldown > 0) {
       c.healCooldown = Math.max(0, c.healCooldown - 1);
+    }
+    // Sistema único: Regeneração de Tentáculos do Cleber Octopus
+    if (c.id === "cleber_octopus") {
+      const regeneracao = 15; // 15 HP fixo por turno
+      const curaAntual = c.hp;
+      c.hp = Math.min(c.hpMax, c.hp + regeneracao);
+      const curaRealizada = c.hp - curaAntual;
+      if (curaRealizada > 0) {
+        log(`${c.nome} regenera ${curaRealizada} HP através de seus tentáculos!`, "system");
+      }
     }
     const novas = [];
     c.condicoes.forEach(cd => {
@@ -2425,8 +2470,11 @@ function calcularDano(atacante, alvo, ataque) {
   }
 
   let multi = 1.0; let tipoEf = "normal";
-  if (VANTAGENS[atacante.estereotipo] === alvo.estereotipo) { multi = 1.5; tipoEf = "forte"; }
-  else if (DESVANTAGENS[atacante.estereotipo] === alvo.estereotipo) { multi = 0.5; tipoEf = "fraco"; }
+  // Cleber Octopus não tem vantagens nem desvantagens contra ninguém
+  if (atacante.id !== "cleber_octopus" && alvo.id !== "cleber_octopus") {
+    if (VANTAGENS[atacante.estereotipo] === alvo.estereotipo) { multi = 1.5; tipoEf = "forte"; }
+    else if (DESVANTAGENS[atacante.estereotipo] === alvo.estereotipo) { multi = 0.5; tipoEf = "fraco"; }
+  }
 
   const base = ataque.poder + s.atk;
   const bruto = Math.max(1, base - sa.def);
@@ -2445,6 +2493,8 @@ function aplicarEfeitos(usuario, alvo, ataque) {
     if (Math.random() * 100 > e.chance) return;
     const target = e.target === "usuario" ? usuario : alvo;
     if (target.hp <= 0) return;
+    // Cleber Octopus é imune a atordoado
+    if (target.id === "cleber_octopus" && e.condicao === "atordoado") return;
     // Evita stack do mesmo
     const existente = target.condicoes.find(c => c.id === e.condicao);
     if (existente) { existente.turnos = Math.max(existente.turnos, e.turnos); }
@@ -2965,6 +3015,7 @@ window.addEventListener("DOMContentLoaded", () => {
   bindMenuBatalha();
 
   document.getElementById("btn-party").onclick = () => { SFX.menu(); abrirParty(); };
+  document.getElementById("btn-classes").onclick = () => { SFX.menu(); renderClasses(); mostrarTela("screen-classes"); };
   document.getElementById("btn-save").onclick = () => {
     SFX.menu();
     if (salvarJogo()) abrirModal("Salvo!", "Progresso salvo no navegador.", [{ label: "OK", testid: "modal-saved-ok" }]);
@@ -2977,6 +3028,7 @@ window.addEventListener("DOMContentLoaded", () => {
         onClick: () => { salvarJogo(); mostrarTela("screen-title"); initTitulo(); } }
     ]);
   };
+  document.getElementById("btn-back-classes").onclick = () => { SFX.menu(); mostrarTela("screen-map"); };
 
   // Botão de som no canto
   const somBtn = document.getElementById("btn-sound");
