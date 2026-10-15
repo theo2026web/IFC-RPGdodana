@@ -1,0 +1,54 @@
+#screen-title {
+  --title-purple-deep: #120821;
+  --title-lavender: #e9d5ff;
+
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(124, 58, 237, 0.25), transparent 58%),
+    linear-gradient(145deg, #0b0614 0%, #1a0b2e 55%, #10071c 100%);
+}
+
+#screen-title .title-frame {
+  border-color: var(--title-lavender);
+  background: linear-gradient(160deg, #291143 0%, var(--title-purple-deep) 100%);
+  box-shadow: 8px 8px 0 #06020b, 0 0 32px rgba(168, 85, 247, 0.24);
+}
+
+#screen-title .title-main {
+  color: var(--title-lavender);
+  text-shadow: 4px 4px 0 #08030f, 8px 8px 0 #7e22ce, 0 0 18px rgba(192, 132, 252, 0.55) !important;
+}
+
+#screen-title .title-sub {
+  color: #c084fc !important;
+}
+
+#screen-title .title-flavor {
+  color: #c4afd9 !important;
+}
+
+#screen-title .title-version {
+  color: #c4afd9;
+}
+
+#screen-title .title-frame::before {
+  color: #c084fc !important;
+}
+
+#screen-title .pixel-btn {
+  border-color: #c084fc;
+  background: linear-gradient(180deg, #54227d 0%, #35134f 100%);
+  color: #f5eaff;
+  box-shadow: 4px 4px 0 #08030f, 0 0 12px rgba(168, 85, 247, 0.18);
+}
+
+#screen-title .pixel-btn:hover {
+  border-color: #f3e8ff;
+  background: #9333ea !important;
+  color: #fff !important;
+  box-shadow: 6px 6px 0 #08030f, 0 0 18px rgba(192, 132, 252, 0.45);
+}
+
+#screen-title .pixel-btn:focus-visible {
+  outline: 3px solid #f3e8ff;
+  outline-offset: 4px;
+}
